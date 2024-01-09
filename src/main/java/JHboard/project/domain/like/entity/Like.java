@@ -18,11 +18,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "likes")
+@Table(name = "likes") //like는 예약어임
 public class Like {
 
   @Id @GeneratedValue
-  @Column(name = "like_id")
+  @Column(name = "likes_id")
   private Long id;
 
   private String text;
