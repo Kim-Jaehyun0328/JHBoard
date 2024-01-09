@@ -1,6 +1,7 @@
 package JHboard.project.domain.member.service;
 
 
+import JHboard.project.domain.member.dto.LoginRqDto;
 import JHboard.project.domain.member.repository.MemberRepository;
 import JHboard.project.domain.member.entity.Member;
 import JHboard.project.domain.member.service.MemberService;
@@ -56,5 +57,11 @@ public class MemberServiceImpl implements MemberService {
   @Transactional
   public void delete(Long memberId) {
     memberRepository.deleteById(memberId);
+  }
+
+  public boolean validateLogin(LoginRqDto loginRqDto) {
+    Optional<Member> member = memberRepository.findByUsername(loginRqDto.getUsername());
+
+    return member.map(m -> loginRqDto.getPassword().equals(m.getPassword())).orElse(false);
   }
 }
