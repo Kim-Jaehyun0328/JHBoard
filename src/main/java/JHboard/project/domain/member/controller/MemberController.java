@@ -22,12 +22,12 @@ public class MemberController {
 
 
   @GetMapping("/login")
-  public String getLogin(@ModelAttribute("loginRqDto")LoginRqDto loginRqDto){
+  public String getLogin(@ModelAttribute("loginForm")LoginRqDto loginRqDto){
     return "";
   }
 
   @PostMapping("/login")
-  public String postLogin(@ModelAttribute("loginRqDto") LoginRqDto loginRqDto, HttpSession session) {
+  public String postLogin(@ModelAttribute("loginForm") LoginRqDto loginRqDto, HttpSession session) {
     if(memberService.validateLogin(loginRqDto)){
       session.setAttribute("loggedInMember", loginRqDto.getUsername());
       return "redirect:/";
@@ -36,17 +36,17 @@ public class MemberController {
   }
 
   @GetMapping("/register")
-  public String getRegister(@ModelAttribute("registerRqDto") RegisterRqDto registerRqDto) {
+  public String getRegister(@ModelAttribute("registerForm") RegisterRqDto registerRqDto) {
     return "members/registerForm";
   }
 
   @PostMapping("/register")
-  public String postRegister(@Valid @ModelAttribute RegisterRqDto registerRqDto, BindingResult bindingResult) {
+  public String postRegister(@Valid @ModelAttribute("registerForm") RegisterRqDto registerRqDto, BindingResult bindingResult) {
     if(bindingResult.hasErrors()){
       return "members/registerForm";
     }
 
-    memberService.create(Member.createDto(registerRqDto));
+    memberService.create(Member.createEntity(registerRqDto));
     return "redirect:/";
   }
 

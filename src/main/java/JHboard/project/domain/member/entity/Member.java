@@ -23,7 +23,7 @@ public class Member {
   private String password; //비밀번호
 
 
-  public static Member createDto(RegisterRqDto registerRqDto) {
+  public static Member createEntity(RegisterRqDto registerRqDto) {
     Member member = new Member();
     member.nickname = registerRqDto.getNickname();
     member.username = registerRqDto.getUsername();
