@@ -23,7 +23,7 @@ public class MemberController {
 
   @GetMapping("/login")
   public String getLogin(@ModelAttribute("loginForm")LoginRqDto loginRqDto){
-    return "";
+    return "members/loginForm";
   }
 
   @PostMapping("/login")

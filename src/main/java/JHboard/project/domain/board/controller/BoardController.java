@@ -38,7 +38,8 @@ public class BoardController {
   }
 
   @GetMapping("/board/new")
-  public String createBoardPage(@ModelAttribute(value = "board")BoardRqDto boardRqDto) {
+  public String createBoardPage(Model model) {
+    model.addAttribute("board", new BoardRqDto());
     return "boards/createBoardForm";
   }
 
