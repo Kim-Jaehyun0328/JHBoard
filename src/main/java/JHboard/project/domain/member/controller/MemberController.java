@@ -8,6 +8,7 @@ import JHboard.project.domain.member.service.MemberService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,10 +29,6 @@ public class MemberController {
 
   @PostMapping("/login")
   public String postLogin(@ModelAttribute("loginForm") LoginRqDto loginRqDto, HttpSession session) {
-    if(memberService.validateLogin(loginRqDto)){
-      session.setAttribute("loggedInMember", loginRqDto.getUsername());
-      return "redirect:/";
-    }
     return "members/loginForm";
   }
 
@@ -46,7 +43,8 @@ public class MemberController {
       return "members/registerForm";
     }
 
-    memberService.create(Member.createEntity(registerRqDto));
+    memberService.create(registerRqDto);
+
     return "redirect:/";
   }
 

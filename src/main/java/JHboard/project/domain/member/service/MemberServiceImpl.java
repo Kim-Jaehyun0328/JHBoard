@@ -2,12 +2,15 @@ package JHboard.project.domain.member.service;
 
 
 import JHboard.project.domain.member.dto.LoginRqDto;
+import JHboard.project.domain.member.dto.RegisterRqDto;
 import JHboard.project.domain.member.repository.MemberRepository;
 import JHboard.project.domain.member.entity.Member;
 import JHboard.project.domain.member.service.MemberService;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberServiceImpl implements MemberService {
 
   private final MemberRepository memberRepository;
-
+  private final PasswordEncoder passwordEncoder;
 
   /**
    *
@@ -45,7 +48,9 @@ public class MemberServiceImpl implements MemberService {
    */
   @Override
   @Transactional
-  public Member create(Member member) {
+  public Member create(RegisterRqDto registerRqDto) {
+    validateDuplicateMember(registerRqDto);
+    Member member = Member.createEntity(registerRqDto, passwordEncoder);
     return memberRepository.save(member);
   }
 
@@ -59,9 +64,15 @@ public class MemberServiceImpl implements MemberService {
     memberRepository.deleteById(memberId);
   }
 
-  public boolean validateLogin(LoginRqDto loginRqDto) {
-    Optional<Member> member = memberRepository.findByUsername(loginRqDto.getUsername());
+  private void validateDuplicateMember(RegisterRqDto registerRqDto) {
+    Optional<Member> checkUsername = memberRepository.findByUsername(registerRqDto.getUsername());
+    if(!checkUsername.isEmpty()) { //사용할 수 없는 아이디라면
+      throw new IllegalStateException("이미 가입된 회원입니다.");
+    }
+    Optional<Member> checkNickname = memberRepository.findByNickname(registerRqDto.getNickname());
+    if(!checkNickname.isEmpty()){
+      throw new IllegalStateException("중복된 닉네임이 있습니다.");
+    }
 
-    return member.map(m -> loginRqDto.getPassword().equals(m.getPassword())).orElse(false);
   }
 }

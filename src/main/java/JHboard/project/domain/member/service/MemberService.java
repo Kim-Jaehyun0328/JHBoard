@@ -2,6 +2,7 @@ package JHboard.project.domain.member.service;
 
 
 import JHboard.project.domain.member.dto.LoginRqDto;
+import JHboard.project.domain.member.dto.RegisterRqDto;
 import JHboard.project.domain.member.entity.Member;
 import java.util.List;
 import java.util.Optional;
@@ -15,9 +16,8 @@ public interface MemberService {
 
   List<Member> findAll();
 
-  Member create(Member member);
+  Member create(RegisterRqDto registerRqDto);
 
   void delete(Long memberId);
 
-  boolean validateLogin(LoginRqDto loginRqDto);
 }

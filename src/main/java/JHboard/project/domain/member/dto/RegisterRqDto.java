@@ -1,6 +1,7 @@
 package JHboard.project.domain.member.dto;
 
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -18,6 +19,7 @@ public class RegisterRqDto {
 
   @NotNull(message = "비밀번호 확인을 위해 입력해주세요.")
   private String passwordConfirm;
+
 
 
 }

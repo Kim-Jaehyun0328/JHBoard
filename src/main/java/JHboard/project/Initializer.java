@@ -1,4 +1,4 @@
-package JHboard.project.config;
+package JHboard.project;
 
 import JHboard.project.domain.board.dto.BoardRqDto;
 import JHboard.project.domain.board.entity.Board;
