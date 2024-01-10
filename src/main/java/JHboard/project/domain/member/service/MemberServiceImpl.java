@@ -74,5 +74,9 @@ public class MemberServiceImpl implements MemberService {
       throw new IllegalStateException("중복된 닉네임이 있습니다.");
     }
 
+    if(!registerRqDto.getPassword().equals(registerRqDto.getPasswordConfirm())){
+      throw new IllegalStateException("비밀번호가 일치하지 않습니다.");
+    }
+
   }
 }

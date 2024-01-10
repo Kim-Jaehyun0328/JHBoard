@@ -8,8 +8,10 @@ import JHboard.project.domain.member.service.MemberService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class MemberController {
 
   private final MemberService memberService;
@@ -33,17 +36,25 @@ public class MemberController {
   }
 
   @GetMapping("/register")
-  public String getRegister(@ModelAttribute("registerForm") RegisterRqDto registerRqDto) {
+  public String getRegister(Model model) {
+    model.addAttribute("registerRqDto", new RegisterRqDto());
     return "members/registerForm";
   }
 
   @PostMapping("/register")
-  public String postRegister(@Valid @ModelAttribute("registerForm") RegisterRqDto registerRqDto, BindingResult bindingResult) {
+  public String postRegister(@Valid @ModelAttribute("registerRqDto") RegisterRqDto registerRqDto,
+      BindingResult bindingResult, Model model) {
     if(bindingResult.hasErrors()){
       return "members/registerForm";
     }
 
-    memberService.create(registerRqDto);
+    try{
+      log.info("registerForm = {}", registerRqDto.toString());
+      memberService.create(registerRqDto);
+    } catch (IllegalStateException e){
+      model.addAttribute("errorMessage", e.getMessage());
+      return "members/registerForm";
+    }
 
     return "redirect:/";
   }
