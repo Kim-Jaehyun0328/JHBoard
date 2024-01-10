@@ -1,6 +1,7 @@
 package JHboard.project.domain.member.service;
 
 
+import JHboard.project.domain.member.dto.LoginRqDto;
 import JHboard.project.domain.member.entity.Member;
 import java.util.List;
 import java.util.Optional;
@@ -17,4 +18,6 @@ public interface MemberService {
   Member create(Member member);
 
   void delete(Long memberId);
+
+  boolean validateLogin(LoginRqDto loginRqDto);
 }

@@ -1,5 +1,6 @@
 package JHboard.project.domain.member.entity;
 
+import JHboard.project.domain.member.dto.RegisterRqDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,9 +18,18 @@ public class Member {
   @Column(name = "member_id")
   private Long id;
 
+  private String nickname;
   private String username; //아이디
   private String password; //비밀번호
 
 
+  public static Member createEntity(RegisterRqDto registerRqDto) {
+    Member member = new Member();
+    member.nickname = registerRqDto.getNickname();
+    member.username = registerRqDto.getUsername();
+    member.password = registerRqDto.getPassword();
+
+    return member;
+  }
 
 }

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Board Detail</title>
+</head>
+<body>
+
+<h2>Board Detail</h2>
+
+<div th:if="${board}">
+  <p><strong>Title:</strong> <span th:text="${board.title}"></span></p>
+  <p><strong>Content:</strong> <span th:text="${board.content}"></span></p>
+
+  <!-- 수정 버튼 -->
+  <a th:href="@{/board/{boardId}/edit(boardId=${board.id})}">Edit</a>
+
+  <!-- 삭제 버튼 -->
+  <!-- 삭제 버튼 -->
+  <form th:action="@{/board/{boardId}/delete(boardId=${board.id})}" method="post">
+    <input type="hidden" name="_method" value="delete" />
+    <button type="submit">Delete</button>
+  </form>
+</div>
+<div th:unless="${board}">
+  <p>게시글이 존재하지 않습니다.</p>
+</div>
+
+</body>
+</html>

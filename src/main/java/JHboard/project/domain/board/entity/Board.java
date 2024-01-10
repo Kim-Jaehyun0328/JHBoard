@@ -1,5 +1,6 @@
 package JHboard.project.domain.board.entity;
 
+import JHboard.project.domain.board.dto.BoardRqDto;
 import JHboard.project.domain.member.entity.Member;
 import JHboard.project.global.BaseEntity;
 import jakarta.persistence.Column;
@@ -32,6 +33,22 @@ public class Board extends BaseEntity {
   @JoinColumn(name = "member_id")
   private Member member;
 
+  public static Board createEntity(BoardRqDto boardRqDto){
+    Board board = new Board();
+    board.title = boardRqDto.getTitle();
+    board.content = boardRqDto.getContent();
+
+    return board;
+  }
+
+  public void updateBoard(BoardRqDto boardRqDto) {
+    this.title = boardRqDto.getTitle();
+    this.content = boardRqDto.getContent();
+  }
+
+  public void updateView(){
+    this.views += 1;
+  }
 
 
 }
