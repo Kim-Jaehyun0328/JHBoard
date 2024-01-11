@@ -2,8 +2,11 @@ package JHboard.project.security.config;
 
 import static org.springframework.security.config.Customizer.*;
 
+import JHboard.project.domain.member.service.MemberService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,32 +18,49 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfiguration {
+
+//  private final MemberService memberService;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-        .authorizeHttpRequests( //인가 규칙을 정의
-            (authorize) -> authorize.anyRequest().authenticated())  //어떤 요청이든 인증된 사용자만 허용
-        .httpBasic(withDefaults()) //http 기본 인증을 활성화하고 기본 설정을 사용
-        .formLogin(withDefaults()); //폼 로그인을 활성화하고 기본 설정을 사용. -> 사용자가 로그인 페이지로 이동하도록 하는 폼 기반 인증을 의미
+        .authorizeHttpRequests(request -> request
+            .requestMatchers("/board/new", "/board/{boardId}/edit", "/board/{boardId}/delete").authenticated()
+            .requestMatchers("/admin").hasRole("ADMIN")
+            .requestMatchers("/", "/login", "/register", "/board/{boardId}").permitAll());
 
+
+        http
+            .formLogin((auth) -> auth
+                    .loginPage("/login")
+                    .loginProcessingUrl("/login")
+                    .permitAll());
+        http
+            .logout((auth) -> auth
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/"));
+
+//    http
+//        .csrf((auth) -> auth.disable());
 
     return http.build();
   }
-//  @Bean
-//  public PasswordEncoder passwordEncoder() {
-//    return new BCryptPasswordEncoder();
-//  }
 
-  @Bean
+  @Bean  //이걸로 바꿔야 함
   public PasswordEncoder passwordEncoder() {
-    return NoOpPasswordEncoder.getInstance();
+    return new BCryptPasswordEncoder();
   }
 
+//  @Bean
+//  public PasswordEncoder passwordEncoder() {
+//    return NoOpPasswordEncoder.getInstance();
+//  }
 
 
 }

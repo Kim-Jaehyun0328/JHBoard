@@ -9,6 +9,7 @@ import JHboard.project.domain.member.repository.MemberRepository;
 import JHboard.project.domain.member.service.MemberService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 

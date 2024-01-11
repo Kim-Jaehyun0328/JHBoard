@@ -1,10 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Title</title>
+  <title>Login Page</title>
 </head>
 <body>
+
+<h2>Login</h2>
+
+<!-- 로그인 폼 -->
+<form th:action="@{/login}" method="post">
+  <!-- 아이디 입력 -->
+  <label for="username">아이디:</label>
+  <input type="text" id="username" name="username" required>
+  <br>
+
+  <!-- 비밀번호 입력 -->
+  <label for="password">비밀번호:</label>
+  <input type="password" id="password" name="password" required>
+  <br>
+
+  <!-- 로그인 버튼 -->
+  <button type="submit">로그인</button>
+  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+</form>
+
+<!-- 에러 메시지 표시 -->
+<p th:if="${loginErrorMsg}" th:text="${loginErrorMsg}" style="color: red;"></p>
 
 </body>
 </html>

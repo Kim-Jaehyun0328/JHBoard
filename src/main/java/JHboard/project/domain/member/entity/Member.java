@@ -2,6 +2,7 @@ package JHboard.project.domain.member.entity;
 
 import static jakarta.persistence.EnumType.*;
 
+import JHboard.project.domain.member.dto.CustomUserDetails;
 import JHboard.project.domain.member.dto.RegisterRqDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,7 +43,17 @@ public class Member {
     member.nickname = registerRqDto.getNickname();
     member.username = registerRqDto.getUsername();
     member.password = passwordEncoder.encode(registerRqDto.getPassword());
-    member.memberRole = MemberRole.MEMBER;
+    member.memberRole = MemberRole.ROLE_MEMBER;
+
+    return member;
+  }
+
+  public static Member createEntity(RegisterRqDto registerRqDto) {
+    Member member = new Member();
+    member.nickname = registerRqDto.getNickname();
+    member.username = registerRqDto.getUsername();
+    member.password = registerRqDto.getPassword();
+    member.memberRole = MemberRole.ROLE_MEMBER;
 
     return member;
   }

@@ -9,6 +9,11 @@ import JHboard.project.domain.member.service.MemberService;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -50,7 +55,9 @@ public class MemberServiceImpl implements MemberService {
   @Transactional
   public Member create(RegisterRqDto registerRqDto) {
     validateDuplicateMember(registerRqDto);
-    Member member = Member.createEntity(registerRqDto, passwordEncoder);
+//    Member member = Member.createEntity(registerRqDto); //passwordEncoder는?
+    Member member = Member.createEntity(registerRqDto, passwordEncoder); //passwordEncoder는?
+
     return memberRepository.save(member);
   }
 
@@ -77,6 +84,5 @@ public class MemberServiceImpl implements MemberService {
     if(!registerRqDto.getPassword().equals(registerRqDto.getPasswordConfirm())){
       throw new IllegalStateException("비밀번호가 일치하지 않습니다.");
     }
-
   }
 }
