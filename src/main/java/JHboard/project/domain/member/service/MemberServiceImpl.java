@@ -6,9 +6,13 @@ import JHboard.project.domain.member.dto.RegisterRqDto;
 import JHboard.project.domain.member.repository.MemberRepository;
 import JHboard.project.domain.member.entity.Member;
 import JHboard.project.domain.member.service.MemberService;
+import JHboard.project.security.jwt.JwtUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class MemberServiceImpl implements MemberService {
 
   private final MemberRepository memberRepository;
@@ -55,11 +60,29 @@ public class MemberServiceImpl implements MemberService {
   @Transactional
   public Member create(RegisterRqDto registerRqDto) {
     validateDuplicateMember(registerRqDto);
-//    Member member = Member.createEntity(registerRqDto); //passwordEncoder는?
     Member member = Member.createEntity(registerRqDto, passwordEncoder); //passwordEncoder는?
 
     return memberRepository.save(member);
   }
+
+  @Override
+  public void login(LoginRqDto loginRqDto, HttpServletResponse response) {
+    Optional<Member> optionalMember = memberRepository.findByUsername(loginRqDto.getUsername());
+
+    if(optionalMember.isEmpty()){
+      log.warn("회원이 존재하지 않음");
+      throw new IllegalArgumentException("존재하는 아이디가 없습니다.");
+    }
+
+    Member member = optionalMember.get();
+
+    if(!passwordEncoder.matches(loginRqDto.getPassword(), member.getPassword())){
+      log.warn("비밀번호가 일치하지 않습니다.");
+      throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+    }
+    //로그인 가능
+  }
+
 
   /**
    * 멤버 엔티티를 db로부터 제거한다.

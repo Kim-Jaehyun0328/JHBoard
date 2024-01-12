@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class CustomUserDetails implements UserDetails {
 
-  private Member member;
+  private final Member member;
 
   public CustomUserDetails(Member member) {
     this.member = member;
@@ -22,7 +22,6 @@ public class CustomUserDetails implements UserDetails {
     collection.add(new GrantedAuthority() {
       @Override
       public String getAuthority() {
-        System.out.println("member.getMemberRole() = " + member.getMemberRole());
         return String.valueOf(member.getMemberRole());
       }
     });
