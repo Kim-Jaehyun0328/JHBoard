@@ -8,14 +8,17 @@ import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.MacAlgorithm;
-import io.jsonwebtoken.security.SignatureAlgorithm;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
@@ -34,32 +37,32 @@ import org.springframework.util.StringUtils;
 
 @Component
 @Slf4j
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class JwtUtil {
 
-  @Value("${spring.jwt.secret.key}")
-  private String secretKey;
-  private Key key;
-  private final MacAlgorithm signatureAlgorithm = SIG.HS256;
 
-  private final UserDetailsService userDetailsService;
+  private Key key;
+  private UserDetailsService userDetailsService;
+
+  public JwtUtil(@Value("${spring.jwt.secret.key}")String secret, UserDetailsService userDetailsService) {
+    byte[] byteSecretKey = Decoders.BASE64.decode(secret);
+    key = Keys.hmacShaKeyFor(byteSecretKey);
+    this.userDetailsService =userDetailsService;
+  }
+
+
 
   public static final String AUTHORIZATION_HEADER = "Authorization";
   public static final String AUTHORIZATION_KEY = "auth";
-  private static final String BEARER_PREFIX = "Bearer ";
+  private static final String BEARER_PREFIX = "Bearer:";  //(Bearer ) 이런식으로 한 칸 띄우면 쿠키 정책에 위반돼서 예외뜸
   private static final long TOKEN_TIME = 60 * 60 * 1000L;
 
-  @PostConstruct
-  public void init() {
-    byte[] bytes = Base64.getDecoder().decode(secretKey);
-    key = Keys.hmacShaKeyFor(bytes);
-  }
 
   public String resolveToken(HttpServletRequest request) {
     String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
 
     //헤더에 토큰이 없다면
-    if(bearerToken == null) {
+    if(bearerToken == null || bearerToken.startsWith("Basic")) {
       Cookie[] cookies = request.getCookies();
       if(cookies != null) {
         for (Cookie cookie : cookies) {
@@ -74,7 +77,22 @@ public class JwtUtil {
     if(StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
       return bearerToken.substring(7);
     }
+
     return null;
+  }
+
+  //토큰 생성
+  public String createToken(String username, MemberRole role) {
+    Date date = new Date();
+    String token = BEARER_PREFIX + Jwts.builder()
+        .subject(username)
+        .claim(AUTHORIZATION_KEY, role)
+        .setExpiration(new Date(date.getTime() + TOKEN_TIME))
+        .signWith(key, SignatureAlgorithm.HS256)
+        .compact();
+
+    log.info("in createToken: token={}",token);
+    return token;
   }
 
   //토큰 생성
@@ -96,12 +114,14 @@ public class JwtUtil {
 
   //토큰에서 사용자 정보 가져오기
   public Claims getUserInfoFromToken(String token) {
+    log.info("getUserInfoFromToken");
     return Jwts.parser().setSigningKey(key).build().parseClaimsJws(token).getBody();
   }
 
   //인증 객체 생성
   public Authentication createAuthentication(String username){
     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+    log.info("userDetails={}",userDetails.getUsername());
     return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
   }
 

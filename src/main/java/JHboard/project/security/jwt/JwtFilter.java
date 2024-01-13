@@ -1,5 +1,6 @@
 package JHboard.project.security.jwt;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -7,6 +8,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -21,33 +25,28 @@ public class JwtFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
 
-    String authorization = request.getHeader("Authorization");
+    String token = jwtUtil.resolveToken(request);
 
-    //헤더 검증
-    if(authorization == null || !authorization.startsWith("Bearer ")){
-      log.info("token = {}", authorization);
-      filterChain.doFilter(request, response);
 
-      //조건이 해당되면(토큰이 없거나 잘못 되었다면) 메소드 종료(필수)
-      return;
+    if(token != null) {
+      if(!jwtUtil.validateToken(token)){ // 잘못된 토큰이라면
+        throw new IllegalArgumentException("JWT Token 인증 실패");
+      }
+
+      Claims info = jwtUtil.getUserInfoFromToken(token);
+      log.info("doFilterInternal: info={}", info);
+      setAuthentication(info.getSubject());
     }
 
-    log.info("authorization now = {}", authorization);
-    //Bearer 부분 제거 후 순수 토큰만 획득
-    String token = authorization.split(" ")[1];
+    filterChain.doFilter(request,response);
+  }
 
-    if(jwtUtil.isExpired(token)) {
-      log.info("token is expired");
-      filterChain.doFilter(request,response);
-      return;
-    }
+  public void setAuthentication(String username) {
+    //jwt 인증 성공 시
+    SecurityContext context = SecurityContextHolder.createEmptyContext();
+    Authentication authentication = jwtUtil.createAuthentication(username);
+    context.setAuthentication(authentication);
 
-    //토큰에서 username, nickname, role 확득
-    String username = jwtUtil.getUsername(token);
-    String nickname = jwtUtil.getNickname(token);
-    String memberRole = jwtUtil.getMemberRole(token);
-
-    
-
+    SecurityContextHolder.setContext(context);
   }
 }

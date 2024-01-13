@@ -43,24 +43,23 @@ public class SecurityConfiguration {
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
         .authorizeHttpRequests(request -> request
-            .requestMatchers("/board/new", "/board/{boardId}/edit", "/board/{boardId}/delete").authenticated()
+            .requestMatchers("/board/new", "/board/*/edit", "/board/*/delete").authenticated()
             .requestMatchers("/admin").hasRole("ADMIN")
             .requestMatchers("/", "/login", "/register", "/board/{boardId}").permitAll());
 
     http
         .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
-        http
-            .formLogin((auth) -> auth
-                    .loginPage("/login")
-                    .loginProcessingUrl("/login")
-                    .permitAll());
-        http
-            .logout((auth) -> auth
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/"));
 
-//    http
-//        .formLogin((auth) -> auth.disable());
+
+//        http
+//            .formLogin((auth) -> auth
+//                    .loginPage("/login")
+//                    .loginProcessingUrl("/login")
+//                    .permitAll());
+
+        http
+        .formLogin((auth) -> auth.disable());
+
     http
         .httpBasic((auth) -> auth.disable());
 

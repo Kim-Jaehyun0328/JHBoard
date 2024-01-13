@@ -31,6 +31,7 @@ public class MemberServiceImpl implements MemberService {
 
   private final MemberRepository memberRepository;
   private final PasswordEncoder passwordEncoder;
+  private final JwtUtil jwtUtil;
 
   /**
    *
@@ -69,6 +70,7 @@ public class MemberServiceImpl implements MemberService {
   public void login(LoginRqDto loginRqDto, HttpServletResponse response) {
     Optional<Member> optionalMember = memberRepository.findByUsername(loginRqDto.getUsername());
 
+    log.info("Im in login method in service layer");
     if(optionalMember.isEmpty()){
       log.warn("회원이 존재하지 않음");
       throw new IllegalArgumentException("존재하는 아이디가 없습니다.");
@@ -80,7 +82,20 @@ public class MemberServiceImpl implements MemberService {
       log.warn("비밀번호가 일치하지 않습니다.");
       throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
     }
-    //로그인 가능
+
+    //토큰을 쿠키고 발급 및 응답에 추가
+    createCookie(response, member);
+  }
+
+  private void createCookie(HttpServletResponse response, Member member) {
+    Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER
+        , jwtUtil.createToken(member.getUsername(), member.getMemberRole()));
+    cookie.setMaxAge(7 * 24 * 60 * 60); //7일 동안 유효
+    cookie.setPath("/");
+    cookie.setDomain("localhost");
+    cookie.setSecure(false);
+
+    response.addCookie(cookie);
   }
 
 
