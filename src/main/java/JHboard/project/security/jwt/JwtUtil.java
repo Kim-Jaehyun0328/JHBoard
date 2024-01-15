@@ -25,7 +25,6 @@ import org.springframework.util.StringUtils;
 
 @Component
 @Slf4j
-//@RequiredArgsConstructor
 public class JwtUtil {
 
 
@@ -79,7 +78,6 @@ public class JwtUtil {
         .signWith(key, SignatureAlgorithm.HS256)
         .compact();
 
-    log.info("in createToken: token={}",token);
     return token;
   }
 
