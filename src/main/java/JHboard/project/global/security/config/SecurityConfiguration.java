@@ -1,8 +1,8 @@
-package JHboard.project.security.config;
+package JHboard.project.global.security.config;
 
 
-import JHboard.project.security.jwt.JwtFilter;
-import JHboard.project.security.jwt.JwtUtil;
+import JHboard.project.global.security.jwt.JwtFilter;
+import JHboard.project.global.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

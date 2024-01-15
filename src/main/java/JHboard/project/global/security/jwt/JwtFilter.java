@@ -1,4 +1,4 @@
-package JHboard.project.security.jwt;
+package JHboard.project.global.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;

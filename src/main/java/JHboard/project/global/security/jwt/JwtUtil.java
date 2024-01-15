@@ -1,4 +1,4 @@
-package JHboard.project.security.jwt;
+package JHboard.project.global.security.jwt;
 
 
 import JHboard.project.domain.member.entity.MemberRole;
