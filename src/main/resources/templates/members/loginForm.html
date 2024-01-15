@@ -27,6 +27,9 @@
 
 <!-- 에러 메시지 표시 -->
 <p th:if="${loginErrorMsg}" th:text="${loginErrorMsg}" style="color: red;"></p>
+<div th:if="${errorMessage}">
+  <p style="color: red;" th:text="${errorMessage}"></p>
+</div>
 
 </body>
 </html>

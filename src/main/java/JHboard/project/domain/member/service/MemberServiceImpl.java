@@ -70,7 +70,6 @@ public class MemberServiceImpl implements MemberService {
   public void login(LoginRqDto loginRqDto, HttpServletResponse response) {
     Optional<Member> optionalMember = memberRepository.findByUsername(loginRqDto.getUsername());
 
-    log.info("Im in login method in service layer");
     if(optionalMember.isEmpty()){
       log.warn("회원이 존재하지 않음");
       throw new IllegalArgumentException("존재하는 아이디가 없습니다.");
@@ -108,6 +107,8 @@ public class MemberServiceImpl implements MemberService {
   public void delete(Long memberId) {
     memberRepository.deleteById(memberId);
   }
+
+
 
   private void validateDuplicateMember(RegisterRqDto registerRqDto) {
     Optional<Member> checkUsername = memberRepository.findByUsername(registerRqDto.getUsername());

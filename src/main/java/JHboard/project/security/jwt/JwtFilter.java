@@ -34,12 +34,12 @@ public class JwtFilter extends OncePerRequestFilter {
       }
 
       Claims info = jwtUtil.getUserInfoFromToken(token);
-      log.info("doFilterInternal: info={}", info);
       setAuthentication(info.getSubject());
     }
 
     filterChain.doFilter(request,response);
   }
+
 
   public void setAuthentication(String username) {
     //jwt 인증 성공 시
@@ -48,5 +48,6 @@ public class JwtFilter extends OncePerRequestFilter {
     context.setAuthentication(authentication);
 
     SecurityContextHolder.setContext(context);
+    log.info("hello");
   }
 }

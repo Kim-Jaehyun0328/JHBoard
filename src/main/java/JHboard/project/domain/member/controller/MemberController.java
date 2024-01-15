@@ -3,22 +3,14 @@ package JHboard.project.domain.member.controller;
 
 import JHboard.project.domain.member.dto.LoginRqDto;
 import JHboard.project.domain.member.dto.RegisterRqDto;
-import JHboard.project.domain.member.entity.Member;
 import JHboard.project.domain.member.service.MemberService;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -46,9 +38,14 @@ public class MemberController {
 
 
   @PostMapping("/login")
-  public String postLogin(@ModelAttribute("loginForm") LoginRqDto loginRqDto, HttpServletResponse response) {
+  public String postLogin(@ModelAttribute("loginForm") LoginRqDto loginRqDto, HttpServletResponse response, Model model) {
     log.info("Im in member controller (postLogin)");
-    memberService.login(loginRqDto, response);
+    try{
+      memberService.login(loginRqDto, response);
+    } catch (IllegalArgumentException e){
+      model.addAttribute("errorMessage", e.getMessage());
+      return "members/loginForm";
+    }
 
     return "redirect:/";
   }
@@ -56,7 +53,6 @@ public class MemberController {
   @GetMapping("/logout")
   public String logout(@CookieValue(value = "Authorization", defaultValue = "", required = false)
                         Cookie jwtCookie, HttpServletResponse response) {
-    log.info("Im in logout");
     clearJwtCookie(jwtCookie, response);
     return "redirect:/";
   }

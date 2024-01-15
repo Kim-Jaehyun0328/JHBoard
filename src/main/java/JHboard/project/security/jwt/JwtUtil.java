@@ -4,28 +4,16 @@ package JHboard.project.security.jwt;
 import JHboard.project.domain.member.entity.MemberRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.Jwts.SIG;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.MacAlgorithm;
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -55,7 +43,7 @@ public class JwtUtil {
   public static final String AUTHORIZATION_HEADER = "Authorization";
   public static final String AUTHORIZATION_KEY = "auth";
   private static final String BEARER_PREFIX = "Bearer:";  //(Bearer ) 이런식으로 한 칸 띄우면 쿠키 정책에 위반돼서 예외뜸
-  private static final long TOKEN_TIME = 60 * 60 * 1000L;
+  private static final long TOKEN_TIME = 60 * 60 * 1000L; //토큰의 유효 시간은 한 시간
 
 
   public String resolveToken(HttpServletRequest request) {
@@ -121,7 +109,6 @@ public class JwtUtil {
   //인증 객체 생성
   public Authentication createAuthentication(String username){
     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-    log.info("userDetails={}",userDetails.getUsername());
     return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
   }
 

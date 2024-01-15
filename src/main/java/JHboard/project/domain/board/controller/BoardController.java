@@ -5,6 +5,7 @@ import JHboard.project.domain.board.dto.BoardRsDto;
 import JHboard.project.domain.board.entity.Board;
 import JHboard.project.domain.board.service.BoardService;
 import jakarta.validation.Valid;
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,54 +48,54 @@ public class BoardController {
   }
 
   @PostMapping("/board/new")
-  public String createBoard(@Valid @ModelAttribute(value = "board") BoardRqDto boardRqDto, BindingResult bindingResult) {
+  public String createBoard(@Valid @ModelAttribute(value = "board") BoardRqDto boardRqDto, BindingResult bindingResult, Principal principal) {
     if(bindingResult.hasErrors()) {
       return "boards/createBoardForm";
     }
-    boardService.create(Board.createEntity(boardRqDto));
+    boardService.create(boardRqDto, principal);
     return "redirect:/";
   }
 
   @GetMapping("/board/{boardId}")
   public String detailBoard(@PathVariable(value = "boardId") Long boardId, Model model) {
-    Optional<Board> board = boardService.findById(boardId);
-    if(board.isEmpty()){
-      throw new RuntimeException("존재하지 않은 게시글입니다.");
-    }
-
-    BoardRsDto boardRsDto = BoardRsDto.toDto(board.get());
+    BoardRsDto boardRsDto = boardService.detailBoard(boardId);
     model.addAttribute("board", boardRsDto);
 
-    board.get().updateView();  //조회 수 1 증가
     return "boards/detailBoardForm";
   }
 
   @GetMapping("/board/{boardId}/edit")
-  public String editBoardPage(@PathVariable(value = "boardId") Long boardId, Model model) {
+  public String editBoardPage(@PathVariable(value = "boardId") Long boardId, Model model, Principal principal) {
 
-    Optional<Board> board = boardService.findById(boardId);
-
-    BoardRsDto boardRsDto = BoardRsDto.toDto(board.get());
-
-    model.addAttribute("board", boardRsDto);
-    return "boards/editBoardForm";
+    if(boardService.checkUser(boardId, principal)){ //맞다면
+      Optional<Board> board = boardService.findById(boardId);
+      BoardRsDto boardRsDto = BoardRsDto.toDto(board.get());
+      model.addAttribute("board", boardRsDto);
+      return "boards/editBoardForm";
+    }
+    return "error/403";
   }
 
   @PostMapping("/board/{boardId}/edit")
-  public String editBoard(@PathVariable(value = "boardId") Long boardId, @Valid @ModelAttribute(value = "board") BoardRqDto boardRqDto, BindingResult bindingResult) {
+  public String editBoard(@PathVariable(value = "boardId") Long boardId, @Valid @ModelAttribute(value = "board") BoardRqDto boardRqDto
+      , Principal principal, BindingResult bindingResult) {
     if(bindingResult.hasErrors()){
       return "boards/editBoardForm";
     }
-
-    boardService.updateBoard(boardId, boardRqDto);
-
-    return "redirect:/board/" + String.valueOf(boardId);
+    if(boardService.checkUser(boardId, principal)){
+      boardService.updateBoard(boardId, boardRqDto);
+      return "redirect:/board/" + String.valueOf(boardId);
+    }
+    return "error/403";
   }
 
   @DeleteMapping("/board/{boardId}/delete")
-  public String deleteBoard(@PathVariable(value = "boardId") Long boardId){
-    boardService.delete(boardId);
-    return "redirect:/";
+  public String deleteBoard(@PathVariable(value = "boardId") Long boardId, Principal principal){
+    if(boardService.checkUser(boardId, principal)){
+      boardService.delete(boardId);
+      return "redirect:/";
+    }
+   return "error/403";
   }
 
 }
