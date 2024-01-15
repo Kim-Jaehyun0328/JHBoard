@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BoardRqDto {
 
-  private Long id;
-
   @NotNull
   private String title;
 

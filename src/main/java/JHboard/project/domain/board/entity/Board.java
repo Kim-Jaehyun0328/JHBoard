@@ -33,11 +33,11 @@ public class Board extends BaseEntity {
   @JoinColumn(name = "member_id")
   private Member member;
 
-  public static Board createEntity(BoardRqDto boardRqDto){
+  public static Board createEntity(BoardRqDto boardRqDto, Member member){
     Board board = new Board();
     board.title = boardRqDto.getTitle();
     board.content = boardRqDto.getContent();
-
+    board.member = member;
     return board;
   }
 
