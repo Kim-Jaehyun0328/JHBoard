@@ -22,10 +22,23 @@ public class BoardFile extends BaseEntity {
   @Column(name = "board_file_id")
   private Long id;
 
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "board_id")
   private Board board;
 
   private String originFileName;
+  private String uniqueFileName;
   private String savedFileName;
+
+
+  public BoardFile(String originFileName, String uniqueFileName, String savedFileName) {
+    this.originFileName = originFileName;
+    this.uniqueFileName = uniqueFileName;
+    this.savedFileName = savedFileName;
+  }
+
+  public void connetBoardId(Board board) {
+    this.board = board;
+  }
 }

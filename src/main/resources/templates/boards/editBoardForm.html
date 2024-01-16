@@ -8,8 +8,10 @@
 
 <h2>Edit Board</h2>
 
-<form th:action="@{/board/{boardId}/edit(boardId=${board.id})}" th:object="${board}" method="post">
-  <!-- 폼 요소들 -->
+<form th:action="@{'/board/' + ${board.id} + '/edit'}" th:object="${board}" method="post" enctype="multipart/form-data">
+
+  <input type="hidden" th:field="*{id}"/>
+
   <label for="title">Title:</label>
   <input type="text" id="title" th:field="*{title}" required/>
   <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
@@ -22,10 +24,20 @@
 
   <br/>
 
-  <button type="submit" th:name="_method" th:value="post">Update</button>
+  <!-- Display the filenames if they exist -->
+  <div th:each="file : ${board.boardFileDtoList}">
+    <p th:text="${file.originalFileName}"></p>
+  </div>
+
+  <label for="multipartFileList">Attach Files:</label>
+  <input type="file" id="multipartFileList" name="multipartFileList" multiple/>
+
+  <br/>
+
+  <button type="submit">Update</button>
 </form>
 
-<a th:href="@{/board/{boardId}(boardId=${board.id})}">Back to Board Detail</a>
+<a href="/">Back to Home</a>
 
 </body>
 </html>

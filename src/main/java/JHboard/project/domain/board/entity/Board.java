@@ -10,6 +10,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,17 +36,22 @@ public class Board extends BaseEntity {
   @JoinColumn(name = "member_id")
   private Member member;
 
-  public static Board createEntity(BoardRqDto boardRqDto, Member member){
+  @OneToMany(mappedBy = "board")
+  private List<BoardFile> boardFiles = new ArrayList<>();
+
+  public static Board createEntity(BoardRqDto boardRqDto, Member member, List<BoardFile> boardFiles){
     Board board = new Board();
     board.title = boardRqDto.getTitle();
     board.content = boardRqDto.getContent();
     board.member = member;
+    board.boardFiles = boardFiles;
     return board;
   }
 
-  public void updateBoard(BoardRqDto boardRqDto) {
+  public void updateBoard(BoardRqDto boardRqDto, List<BoardFile> boardFiles) {
     this.title = boardRqDto.getTitle();
     this.content = boardRqDto.getContent();
+    this.boardFiles = boardFiles;
   }
 
   public void updateView(){

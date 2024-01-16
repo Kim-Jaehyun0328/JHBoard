@@ -1,6 +1,7 @@
 package JHboard.project.global.security.jwt;
 
 
+import JHboard.project.domain.member.entity.Member;
 import JHboard.project.domain.member.entity.MemberRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -12,6 +13,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.security.Key;
 import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
@@ -82,7 +84,7 @@ public class JwtUtil {
   }
 
   //토큰 생성
-  public boolean validateToken(String token) {
+  public boolean validateToken(String token, HttpServletResponse response) {
     try {
       Jwts.parser().setSigningKey(key).build().parseClaimsJws(token);
       return true;
@@ -95,6 +97,7 @@ public class JwtUtil {
     } catch (IllegalArgumentException e) {
       log.info("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
     }
+    clearJwtCookie(response);
     return false;
   }
 
@@ -109,6 +112,15 @@ public class JwtUtil {
     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
     return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
   }
+
+  private void clearJwtCookie(HttpServletResponse response){
+    Cookie jwtCookie = new Cookie(AUTHORIZATION_HEADER, null);
+    jwtCookie.setValue(null);
+    jwtCookie.setMaxAge(0);
+    jwtCookie.setPath("/");
+    response.addCookie(jwtCookie);
+  }
+
 
 }
 
