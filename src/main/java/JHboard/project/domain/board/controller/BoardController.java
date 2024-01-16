@@ -5,6 +5,7 @@ import JHboard.project.domain.board.dto.BoardRsDto;
 import JHboard.project.domain.board.entity.Board;
 import JHboard.project.domain.board.service.BoardService;
 import jakarta.validation.Valid;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +34,7 @@ public class BoardController {
     List<Board> boards = boardService.findAll();
 
     List<BoardRsDto> boardList = boards.stream()
-        .map(BoardRsDto::toDto)
+        .map(BoardRsDto::toDtoForList)
         .collect(Collectors.toList());
 
     model.addAttribute("boardList", boardList);
@@ -48,7 +49,8 @@ public class BoardController {
   }
 
   @PostMapping("/board/new")
-  public String createBoard(@Valid @ModelAttribute(value = "board") BoardRqDto boardRqDto, BindingResult bindingResult, Principal principal) {
+  public String createBoard(@Valid @ModelAttribute(value = "board") BoardRqDto boardRqDto, BindingResult bindingResult, Principal principal)
+      throws IOException {
     if(bindingResult.hasErrors()) {
       return "boards/createBoardForm";
     }
@@ -78,13 +80,13 @@ public class BoardController {
 
   @PostMapping("/board/{boardId}/edit")
   public String editBoard(@PathVariable(value = "boardId") Long boardId, @Valid @ModelAttribute(value = "board") BoardRqDto boardRqDto
-      , Principal principal, BindingResult bindingResult) {
+      , Principal principal, BindingResult bindingResult) throws IOException {
     if(bindingResult.hasErrors()){
       return "boards/editBoardForm";
     }
     if(boardService.checkUser(boardId, principal)){
       boardService.updateBoard(boardId, boardRqDto);
-      return "redirect:/board/" + String.valueOf(boardId);
+      return "redirect:/board/" + boardId;
     }
     return "error/403";
   }

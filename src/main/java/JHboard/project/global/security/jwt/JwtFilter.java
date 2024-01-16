@@ -1,4 +1,4 @@
-package JHboard.project.security.jwt;
+package JHboard.project.global.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -29,7 +29,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
 
     if(token != null) {
-      if(!jwtUtil.validateToken(token)){ // 잘못된 토큰이라면
+      if(!jwtUtil.validateToken(token, response)){ // 잘못된 토큰이라면
         throw new IllegalArgumentException("JWT Token 인증 실패");
       }
 
@@ -48,6 +48,5 @@ public class JwtFilter extends OncePerRequestFilter {
     context.setAuthentication(authentication);
 
     SecurityContextHolder.setContext(context);
-    log.info("hello");
   }
 }

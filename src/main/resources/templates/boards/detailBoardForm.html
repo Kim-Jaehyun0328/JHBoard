@@ -12,12 +12,23 @@
   <p><strong>Title:</strong> <span th:text="${board.title}"></span></p>
   <p><strong>Content:</strong> <span th:text="${board.content}"></span></p>
 
+  <!-- 게시글의 첨부 파일 목록 -->
+  <div th:if="${board.boardFileDtoList}">
+    <p><strong>Attachments:</strong></p>
+    <ul>
+      <li th:each="file : ${board.boardFileDtoList}">
+        <a th:href="@{'/boardFile/download/' + ${file.id}}"
+           th:text="${file.originalFileName}">
+        </a>
+      </li>
+    </ul>
+  </div>
+
   <!-- 수정 버튼 -->
-  <a th:href="@{/board/{boardId}/edit(boardId=${board.id})}">Edit</a>
+  <a th:href="@{'/board/' + ${board.id} + '/edit'}">Edit</a>
 
   <!-- 삭제 버튼 -->
-  <!-- 삭제 버튼 -->
-  <form th:action="@{/board/{boardId}/delete(boardId=${board.id})}" method="post">
+  <form th:action="@{'/board/' + ${board.id} + '/delete'}" method="post">
     <input type="hidden" name="_method" value="delete" />
     <button type="submit">Delete</button>
   </form>
