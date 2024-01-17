@@ -54,6 +54,7 @@ public class BoardController {
     if(bindingResult.hasErrors()) {
       return "boards/createBoardForm";
     }
+    log.debug("content={}",boardRqDto.getContent());
     boardService.create(boardRqDto, principal);
     return "redirect:/";
   }

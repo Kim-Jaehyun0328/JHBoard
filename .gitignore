@@ -19,6 +19,7 @@ bin/
 
 ### IntelliJ IDEA ###
 application-jwt.properties
+application-s3.properties
 .idea
 *.iws
 *.iml
