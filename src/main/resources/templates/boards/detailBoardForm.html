@@ -10,7 +10,7 @@
 
 <div th:if="${board}">
   <p><strong>Title:</strong> <span th:text="${board.title}"></span></p>
-  <p><strong>Content:</strong> <span th:text="${board.content}"></span></p>
+  <p><strong>Content:</strong> <span th:utext="${board.content}"></span></p>
 
   <!-- 게시글의 첨부 파일 목록 -->
   <div th:if="${board.boardFileDtoList}">

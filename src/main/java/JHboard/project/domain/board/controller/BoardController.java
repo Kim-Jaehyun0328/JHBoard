@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -49,9 +50,12 @@ public class BoardController {
   }
 
   @PostMapping("/board/new")
-  public String createBoard(@Valid @ModelAttribute(value = "board") BoardRqDto boardRqDto, BindingResult bindingResult, Principal principal)
+  public String createBoard(@Valid @ModelAttribute(value = "board") BoardRqDto boardRqDto, BindingResult bindingResult, Principal principal, Model model)
       throws IOException {
     if(bindingResult.hasErrors()) {
+      return "boards/createBoardForm";
+    }
+    if(boardRqDto.getContent().equals("")){ //빈 텍스트라면
       return "boards/createBoardForm";
     }
     log.debug("content={}",boardRqDto.getContent());
@@ -100,5 +104,4 @@ public class BoardController {
     }
    return "error/403";
   }
-
 }
