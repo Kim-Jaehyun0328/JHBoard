@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>Create Board</title>
+<!--  CKEditor 스크립트 추가-->
+  <script src="https://cdn.ckeditor.com/ckeditor5/40.2.0/classic/ckeditor.js"></script>
+
 </head>
 <body>
 
@@ -15,9 +18,14 @@
 
   <br/>
 
-  <label for="content">Content:</label>
-  <textarea id="content" th:field="*{content}" required></textarea>
+<!--  <label for="content">Content:</label>-->
+<!--  <textarea id="content" th:field="*{content}" required></textarea>-->
+<!--  <span th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></span>-->
+  <div th:with="editorId='editor'">
+    <div id="editor" th:field="*{content}" required style="display: none;"></div>
+  </div>
   <span th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></span>
+
 
   <br/>
 
@@ -31,5 +39,13 @@
 
 <a href="/">Back to Home</a>
 
+<script>
+    // CKEditor 초기화 스크립트
+    ClassicEditor
+        .create(document.querySelector('#editor'))
+        .catch(error => {
+            console.error(error);
+        });
+</script>
 </body>
 </html>
