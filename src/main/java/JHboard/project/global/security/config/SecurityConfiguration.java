@@ -56,8 +56,8 @@ public class SecurityConfiguration {
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 
-//    http   //jwt 방식은 세션을 stateless하게 관리하기 때문에 csrf 공격을 방어할 필요가 없다?
-//        .csrf((auth) -> auth.disable());
+    http   //jwt 방식은 세션을 stateless하게 관리하기 때문에 csrf 공격을 방어할 필요가 없다?
+        .csrf((auth) -> auth.disable());
 
     http
         .exceptionHandling((exceptionHandling) -> exceptionHandling

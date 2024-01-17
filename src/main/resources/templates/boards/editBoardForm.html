@@ -3,6 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <title>Edit Board</title>
+  <!-- CKEditor 스크립트 추가 -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="/js/build/ckeditor.js"></script>
+
+  <style>
+    .ck.ck-editor {
+      width: 80%;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .ck-editor__editable {
+      height: 80vh;
+    }
+
+    form {
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
 
@@ -18,9 +38,7 @@
 
   <br/>
 
-  <label for="content">Content:</label>
-  <textarea id="content" th:field="*{content}" required></textarea>
-  <span th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></span>
+  <textarea name="content" id="content" th:field="*{content}" style="display: none;"></textarea><br>
 
   <br/>
 
@@ -38,6 +56,18 @@
 </form>
 
 <a href="/">Back to Home</a>
+
+<script>
+
+  ClassicEditor.create(document.querySelector('#content'), {
+    language: "ko",
+    ckfinder: {
+      uploadUrl: "/image/upload",
+      withCredentials: true
+    }
+  });
+
+</script>
 
 </body>
 </html>
