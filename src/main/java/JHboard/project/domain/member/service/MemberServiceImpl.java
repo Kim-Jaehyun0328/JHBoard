@@ -36,6 +36,11 @@ public class MemberServiceImpl implements MemberService {
     return memberRepository.findById(memberId);
   }
 
+  @Override
+  public Optional<Member> findByUsername(String username) {
+    return memberRepository.findByUsername(username);
+  }
+
   /**
    *
    * @return 멤버 엔티티 모두 반환한다.

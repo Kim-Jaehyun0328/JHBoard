@@ -23,4 +23,5 @@ public interface BoardService {
 
   boolean checkUser(Long boardId, Principal principal);
 
+
 }

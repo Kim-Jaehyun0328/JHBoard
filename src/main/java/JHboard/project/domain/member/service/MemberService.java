@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 public interface MemberService {
   Optional<Member> findById(Long memberId);
 
+  Optional<Member> findByUsername(String username);
+
   List<Member> findAll();
 
   Member create(RegisterRqDto registerRqDto);

@@ -3,9 +3,11 @@ package JHboard.project.domain.member.dto;
 import JHboard.project.domain.member.entity.Member;
 import java.util.ArrayList;
 import java.util.Collection;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+@Getter
 public class CustomUserDetails implements UserDetails {
 
   private final Member member;

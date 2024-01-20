@@ -1,6 +1,7 @@
 package JHboard.project.domain.board.entity;
 
 import JHboard.project.domain.board.dto.BoardRqDto;
+import JHboard.project.domain.like.entity.Like;
 import JHboard.project.domain.member.entity.Member;
 import JHboard.project.global.BaseEntity;
 import jakarta.persistence.Column;
@@ -34,12 +35,15 @@ public class Board extends BaseEntity {
   private int views = 0;
   private int likeCount = 0;
 
-  @ManyToOne(fetch = FetchType.EAGER)  //원래는 lazy이나 게시글을 가져올때 보통 멤버를 무조건 가져오기 때문에 eager로 설정해봄
+  @ManyToOne(fetch = FetchType.LAZY)  //원래는 lazy이나 게시글을 가져올때 보통 멤버를 무조건 가져오기 때문에 eager로 설정해봄
   @JoinColumn(name = "member_id")
   private Member member;
 
   @OneToMany(mappedBy = "board")
   private List<BoardFile> boardFiles = new ArrayList<>();
+
+  @OneToMany(mappedBy = "board")
+  private List<Like> likes = new ArrayList<>();
 
   public static Board createEntity(BoardRqDto boardRqDto, Member member, List<BoardFile> boardFiles){
     Board board = new Board();
@@ -58,6 +62,10 @@ public class Board extends BaseEntity {
 
   public void updateView(){
     this.views += 1;
+  }
+
+  public void updateLikeCount(int num) {
+    this.likeCount += num;
   }
 
 

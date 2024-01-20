@@ -57,6 +57,7 @@ public class MemberController {
     return "redirect:/";
   }
 
+
   @GetMapping("/register")
   public String getRegister(Model model) {
     model.addAttribute("registerRqDto", new RegisterRqDto());

@@ -25,9 +25,7 @@ public class Like {
   @Column(name = "likes_id")
   private Long id;
 
-  private String text;
-
-  @ManyToOne(fetch = FetchType.EAGER)  //원래는 lazy이나 게시글을 가져올때 보통 멤버를 무조건 가져오기 때문에 eager로 설정해봄
+  @ManyToOne(fetch = FetchType.LAZY)  //원래는 lazy이나 게시글을 가져올때 보통 멤버를 무조건 가져오기 때문에 eager로 설정해봄
   @JoinColumn(name = "member_id")
   private Member member;
 
@@ -35,6 +33,8 @@ public class Like {
   @JoinColumn(name = "board_id")
   private Board board;
 
-
-
+  public Like(Member member, Board board) {
+    this.member = member;
+    this.board = board;
+  }
 }

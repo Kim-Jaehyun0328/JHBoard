@@ -83,6 +83,13 @@ public class BoardServiceImpl implements BoardService{
 
   }
 
+  /**
+   * 로그인 유저 == 작성자 -> 버튼 막아두기
+   * 로그인 유지 != 작성자 -> 버튼 활성화 (리포지토리 뒤져서 활성화)
+   * 비로그인 유저 -> 누르면 로그인 창으로
+   * @param boardId
+   * @return
+   */
   @Transactional
   public BoardRsDto detailBoard(Long boardId) {
     Optional<Board> boardOptional = boardRepository.findById(boardId);
@@ -93,8 +100,17 @@ public class BoardServiceImpl implements BoardService{
     return null;
   }
 
+  /**
+   * 현재 로그인한 사용자와 특정 게시글 작성자가 같은 지 확인하는 메소드
+   * @param boardId
+   * @param principal
+   * @return true면 같다, 다르면 false
+   */
   @Override
   public boolean checkUser(Long boardId, Principal principal) { //로그인 한 유저와 게시글 작성 유저가 같은 지 확인
+    if(principal == null){
+      return false;
+    }
     String loggedInUsername = principal.getName();
     Optional<Board> boardOptional = boardRepository.findById(boardId);
 
@@ -107,4 +123,5 @@ public class BoardServiceImpl implements BoardService{
     }
     return false;
   }
+
 }

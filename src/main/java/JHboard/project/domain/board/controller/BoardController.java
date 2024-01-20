@@ -4,6 +4,8 @@ import JHboard.project.domain.board.dto.BoardRqDto;
 import JHboard.project.domain.board.dto.BoardRsDto;
 import JHboard.project.domain.board.entity.Board;
 import JHboard.project.domain.board.service.BoardService;
+import JHboard.project.domain.like.service.LikeService;
+import JHboard.project.domain.member.dto.CustomUserDetails;
 import jakarta.validation.Valid;
 import java.io.IOException;
 import java.security.Principal;
@@ -12,6 +14,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,10 +32,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class BoardController {
 
   private final BoardService boardService;
+  private final LikeService likeService;
 
   @GetMapping("/")
   public String home(Model model) {
-
     List<Board> boards = boardService.findAll();
 
     List<BoardRsDto> boardList = boards.stream()
@@ -58,18 +62,27 @@ public class BoardController {
     if(boardRqDto.getContent().equals("")){ //빈 텍스트라면
       return "boards/createBoardForm";
     }
-    log.debug("content={}",boardRqDto.getContent());
     boardService.create(boardRqDto, principal);
     return "redirect:/";
   }
 
   @GetMapping("/board/{boardId}")
-  public String detailBoard(@PathVariable(value = "boardId") Long boardId, Model model) {
+  public String detailBoard(@PathVariable(value = "boardId") Long boardId, Model model
+      , @AuthenticationPrincipal CustomUserDetails userDetails) {
+    boolean like = false;
+
+    if(userDetails != null){
+      Long memberId = userDetails.getMember().getId();
+      like = likeService.findLike(boardId, memberId);
+    }
+
     BoardRsDto boardRsDto = boardService.detailBoard(boardId);
     model.addAttribute("board", boardRsDto);
+    model.addAttribute("like", like);
 
     return "boards/detailBoardForm";
   }
+
 
   @GetMapping("/board/{boardId}/edit")
   public String editBoardPage(@PathVariable(value = "boardId") Long boardId, Model model, Principal principal) {

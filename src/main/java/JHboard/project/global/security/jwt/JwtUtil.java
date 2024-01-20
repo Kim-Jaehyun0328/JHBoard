@@ -14,6 +14,7 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.security.Key;
 import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
@@ -84,7 +85,7 @@ public class JwtUtil {
   }
 
   //토큰 생성
-  public boolean validateToken(String token, HttpServletResponse response) {
+  public boolean validateToken(String token, HttpServletResponse response) throws IOException {
     try {
       Jwts.parser().setSigningKey(key).build().parseClaimsJws(token);
       return true;
@@ -113,12 +114,13 @@ public class JwtUtil {
     return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
   }
 
-  private void clearJwtCookie(HttpServletResponse response){
+  private void clearJwtCookie(HttpServletResponse response) throws IOException {
     Cookie jwtCookie = new Cookie(AUTHORIZATION_HEADER, null);
     jwtCookie.setValue(null);
     jwtCookie.setMaxAge(0);
     jwtCookie.setPath("/");
     response.addCookie(jwtCookie);
+    response.sendRedirect("/");
   }
 
 
