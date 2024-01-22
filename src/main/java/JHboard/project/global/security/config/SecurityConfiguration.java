@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,19 +38,19 @@ public class SecurityConfiguration {
             .requestMatchers("/admin").hasRole("ADMIN")
             .anyRequest().permitAll()
         );
-
     http
         .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
-
-        http
+    http
         .formLogin((auth) -> auth.disable());
+    http
+        .logout((auth) -> auth.disable());
+//    http
+//        .logout((auth) -> auth.logoutUrl("/logout")
+//            .logoutSuccessUrl("/"));
 
     http
         .httpBasic((auth) -> auth.disable());
-
-    http
-        .logout((auth) -> auth.disable());
 
     http //jwt 방식은 세션을 stateless하게 설정해야 한다.
         .sessionManagement((session) -> session
@@ -58,6 +59,8 @@ public class SecurityConfiguration {
 
     http   //jwt 방식은 세션을 stateless하게 관리하기 때문에 csrf 공격을 방어할 필요가 없다?
         .csrf((auth) -> auth.disable());
+
+
 
     http
         .exceptionHandling((exceptionHandling) -> exceptionHandling
