@@ -55,6 +55,7 @@ public class BoardServiceImpl implements BoardService{
       for (BoardFile boardFile : boardFiles) {
         boardFile.connetBoardId(savedBoard);
         boardFileService.create(boardFile);
+        savedBoard.getBoardFiles().add(boardFile);
       }
     }
   }

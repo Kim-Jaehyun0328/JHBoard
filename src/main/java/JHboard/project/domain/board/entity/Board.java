@@ -42,7 +42,7 @@ public class Board extends BaseEntity {
   @OneToMany(mappedBy = "board")
   private List<BoardFile> boardFiles = new ArrayList<>();
 
-  @OneToMany(mappedBy = "board")
+  @OneToMany(mappedBy = "board", orphanRemoval = true)
   private List<Like> likes = new ArrayList<>();
 
   public static Board createEntity(BoardRqDto boardRqDto, Member member, List<BoardFile> boardFiles){

@@ -43,6 +43,7 @@ public class BoardFileServiceImpl implements BoardFileService{
   @Override
   public List<BoardFile> deleteAndCreateBoardFile(
       BoardRqDto boardRqDto, Board board) throws IOException {
+    board.getBoardFiles().clear();
     for (BoardFile boardFile : board.getBoardFiles()) {  //db+s3에서 기존 boardFile 삭제하기
       delete(boardFile);
     }
@@ -50,6 +51,7 @@ public class BoardFileServiceImpl implements BoardFileService{
     for (BoardFile boardFile : boardFiles) {
       boardFile.connetBoardId(board);
       create(boardFile);
+      board.getBoardFiles().add(boardFile);
     }
     return boardFiles;
   }

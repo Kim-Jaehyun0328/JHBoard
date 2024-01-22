@@ -10,6 +10,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +26,8 @@ public class Comment extends BaseEntity {
   @Column(name = "comment_id")
   private Long id;
 
-  private String text;
+  @Column(nullable = false, length = 1000)
+  private String content;
 
   @ManyToOne(fetch = FetchType.EAGER)  //원래는 lazy이나 게시글을 가져올때 보통 멤버를 무조건 가져오기 때문에 eager로 설정해봄
   @JoinColumn(name = "member_id")
@@ -33,6 +37,12 @@ public class Comment extends BaseEntity {
   @JoinColumn(name = "board_id")
   private Board board;
 
+  @OneToMany(mappedBy = "parent")
+  private List<Comment> children = new ArrayList<>();
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "parent_id")
+  private Comment parent;
 
 
 }
