@@ -15,6 +15,10 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,8 +41,8 @@ public class BoardServiceImpl implements BoardService{
   }
 
   @Override
-  public List<Board> findAll() {
-    return boardRepository.findAll();
+  public Page<Board> findAll(Pageable pageable) {
+    return boardRepository.findAll(pageable);
   }
 
 
@@ -66,7 +70,6 @@ public class BoardServiceImpl implements BoardService{
 
     Board board = boardRepository.findById(boardId)
         .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + boardId));
-
     for (BoardFile boardFile : board.getBoardFiles()) {
       boardFileService.delete(boardFile);
     }

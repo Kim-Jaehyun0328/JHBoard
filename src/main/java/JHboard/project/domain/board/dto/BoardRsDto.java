@@ -2,14 +2,18 @@ package JHboard.project.domain.board.dto;
 
 
 import JHboard.project.domain.board.entity.Board;
+import JHboard.project.domain.comment.dto.CommentRsDto;
+import JHboard.project.global.BaseEntity;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Data;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-@Data
 @Slf4j
+@Getter
 public class BoardRsDto {
 
   private Long id;
@@ -19,6 +23,9 @@ public class BoardRsDto {
   private int views;
   private int likeCount;
   private List<BoardFileDto> boardFileDtoList = new ArrayList<>();
+  private List<CommentRsDto> comments = new ArrayList<>();
+  private LocalDateTime createdAt;
+  private LocalDateTime modifiedAt;
 
 
   /**
@@ -29,10 +36,11 @@ public class BoardRsDto {
   public static BoardRsDto toDtoForList(Board board){
     BoardRsDto boardRsDto = new BoardRsDto();
     boardRsDto.id = board.getId();
+    boardRsDto.writer = board.getMember().getNickname();
     boardRsDto.title = board.getTitle();
-    boardRsDto.content = board.getContent();
     boardRsDto.views = board.getViews();
     boardRsDto.likeCount = board.getLikeCount();
+    boardRsDto.createdAt = board.getCreateAt();
     return boardRsDto;
   }
 
@@ -45,13 +53,14 @@ public class BoardRsDto {
     BoardRsDto boardRsDto = new BoardRsDto();
     boardRsDto.id = board.getId();
     boardRsDto.writer = board.getMember().getUsername(); //여기서 쿼리가 더 나갈 거야
-    log.info("lazy 로딩 멤버 쿼리 나갑니다.");
     boardRsDto.title = board.getTitle();
     boardRsDto.content = board.getContent();
     boardRsDto.views = board.getViews();
     boardRsDto.likeCount = board.getLikeCount();
     boardRsDto.boardFileDtoList = board.getBoardFiles().stream()
         .map(bf -> new BoardFileDto(bf)).collect(Collectors.toList());
+    boardRsDto.comments = board.getComments().stream()
+        .map(c -> CommentRsDto.toDto(c)).collect(Collectors.toList());
     return boardRsDto;
   }
 }

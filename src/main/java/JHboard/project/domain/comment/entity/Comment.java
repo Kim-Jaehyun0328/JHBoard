@@ -16,6 +16,7 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Getter
@@ -29,7 +30,7 @@ public class Comment extends BaseEntity {
   @Column(nullable = false, length = 1000)
   private String content;
 
-  @ManyToOne(fetch = FetchType.EAGER)  //원래는 lazy이나 게시글을 가져올때 보통 멤버를 무조건 가져오기 때문에 eager로 설정해봄
+  @ManyToOne(fetch = FetchType.LAZY)  //원래는 lazy이나 게시글을 가져올때 보통 멤버를 무조건 가져오기 때문에 eager로 설정해봄
   @JoinColumn(name = "member_id")
   private Member member;
 
@@ -37,12 +38,23 @@ public class Comment extends BaseEntity {
   @JoinColumn(name = "board_id")
   private Board board;
 
-  @OneToMany(mappedBy = "parent")
+  @OneToMany(mappedBy = "parent", orphanRemoval = true)
   private List<Comment> children = new ArrayList<>();
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "parent_id")
   private Comment parent;
+
+
+  public static Comment toEntity(Member member, Board board, String content){
+    Comment comment = new Comment();
+
+    comment.member = member;
+    comment.board = board;
+    comment.content = content;
+
+    return comment;
+  }
 
 
 }

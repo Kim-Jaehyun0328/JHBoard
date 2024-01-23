@@ -22,13 +22,13 @@ public class InitConfig {
 
   @Bean
   public boolean initialData() {
-    Member member1 = Member.createEntity(new RegisterRqDto("hello", "hello",
+    Member member1 = Member.createEntity(new RegisterRqDto("userA", "hello",
             "123123123", "123123123"),
         passwordEncoder);
-    Member member2 = Member.createEntity(new RegisterRqDto("hi", "hi",
+    Member member2 = Member.createEntity(new RegisterRqDto("userB", "hi",
             "123123123", "123123123"),
         passwordEncoder);
-    Member member3 = Member.createEntity(new RegisterRqDto("good", "good",
+    Member member3 = Member.createEntity(new RegisterRqDto("userC", "good",
             "123123123", "123123123"),
         passwordEncoder);
 
@@ -52,6 +52,13 @@ public class InitConfig {
           new BoardRqDto("이것은 " + String.valueOf(i) + "번째 게시글", "안녕하세요"), member3, null);
       boardRepository.save(board);
     }
+
+    for(int i = 15; i<120; i++){
+      Board board = Board.createEntity(
+          new BoardRqDto("이것은 " + String.valueOf(i) + "번째 게시글", "안녕하세요"), member3, null);
+      boardRepository.save(board);
+    }
+
     return true;
   }
 

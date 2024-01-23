@@ -14,6 +14,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -35,14 +39,17 @@ public class BoardController {
   private final LikeService likeService;
 
   @GetMapping("/")
-  public String home(Model model) {
-    List<Board> boards = boardService.findAll();
+  public String home(Model model, @PageableDefault(size = 5, sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    Page<BoardRsDto> boards = boardService.findAll(pageable).map(BoardRsDto::toDtoForList);
 
-    List<BoardRsDto> boardList = boards.stream()
-        .map(BoardRsDto::toDtoForList)
-        .collect(Collectors.toList());
+    //요청한 페이지가 0보다 작거나 줄 수 있는 페이지보다 클 때
+    if(boards.getTotalPages() <= pageable.getPageNumber()){
+      log.info("hello");
+      return "error/403";
+    }
 
-    model.addAttribute("boardList", boardList);
+
+    model.addAttribute("boardList", boards);
 
     return "home";
   }

@@ -7,11 +7,13 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface BoardService {
   Optional<Board> findById(Long boardId);
 
-  List<Board> findAll();
+  Page<Board> findAll(Pageable pageable);
 
   void create(BoardRqDto boardRqDto, Principal principal) throws IOException;
 

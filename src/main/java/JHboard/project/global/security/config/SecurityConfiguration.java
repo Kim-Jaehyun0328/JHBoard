@@ -60,6 +60,9 @@ public class SecurityConfiguration {
     http   //jwt 방식은 세션을 stateless하게 관리하기 때문에 csrf 공격을 방어할 필요가 없다?
         .csrf((auth) -> auth.disable());
 
+    http
+        .cors((auth) -> auth.disable());
+
 
 
     http

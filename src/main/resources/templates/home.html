@@ -3,31 +3,88 @@
 <!--<head>-->
 <!--  <meta charset="UTF-8">-->
 <!--  <title>Home</title>-->
+<!--  &lt;!&ndash; 부트스트랩 링크 추가 &ndash;&gt;-->
+<!--  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"-->
+<!--        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">-->
+<!--  &lt;!&ndash; 추가적인 CSS 스타일링 &ndash;&gt;-->
+<!--  <style>-->
+<!--    body {-->
+<!--      padding-top: 20px;-->
+<!--    }-->
+
+<!--    .navbar {-->
+<!--      background-color: #007bff;-->
+<!--    }-->
+
+<!--    .navbar-brand,-->
+<!--    .navbar-nav .nav-link {-->
+<!--      color: #ffffff;-->
+<!--    }-->
+
+<!--    table {-->
+<!--      width: 80%;-->
+<!--      margin: 20px auto;-->
+<!--    }-->
+
+<!--    .btn-write {-->
+<!--      margin-bottom: 20px;-->
+<!--    }-->
+<!--  </style>-->
 <!--</head>-->
 <!--<body>-->
 
-<!--<h2>Board List</h2>-->
+<!--&lt;!&ndash; 네비게이션 바 &ndash;&gt;-->
+<!--<nav class="navbar navbar-expand-lg navbar-dark">-->
+<!--  <a class="navbar-brand" href="/">JHboard</a>-->
+<!--  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"-->
+<!--          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">-->
+<!--    <span class="navbar-toggler-icon"></span>-->
+<!--  </button>-->
+<!--  <div class="collapse navbar-collapse" id="navbarNav">-->
+<!--    <ul class="navbar-nav ml-auto">-->
+<!--      <li class="nav-item">-->
+<!--        <a class="nav-link" href="/login">로그인</a>-->
+<!--      </li>-->
+<!--    </ul>-->
+<!--  </div>-->
+<!--</nav>-->
 
-<!--<table>-->
+<!--&lt;!&ndash; 글쓰기 버튼 &ndash;&gt;-->
+<!--<div class="text-center">-->
+<!--  <a class="btn btn-primary btn-write" th:href="@{/board/new}">글쓰기</a>-->
+<!--  <button onclick="pagingReq()">페이징 목록</button>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; 게시글 목록 &ndash;&gt;-->
+<!--<table class="table table-striped">-->
 <!--  <thead>-->
 <!--  <tr>-->
-<!--    <th>Title</th>-->
-<!--    <th>Content</th>-->
+<!--    <th>작성자</th>-->
+<!--    <th>제목</th>-->
+<!--    <th>조회 수</th>-->
+<!--    <th>좋아요 수</th>-->
 <!--  </tr>-->
 <!--  </thead>-->
 <!--  <tbody>-->
 <!--  <tr th:each="board : ${boardList}">-->
+<!--    <td th:text="${board.writer}"></td>-->
 <!--    &lt;!&ndash; 클릭 시 상세 페이지로 이동하는 링크 &ndash;&gt;-->
 <!--    <td>-->
-<!--      <a th:href="@{/board/{boardId}(boardId=${board.id})}" th:text="${board.title}"></a>-->
+<!--      <a class="btn btn-link" th:href="@{/board/{boardId}(boardId=${board.id})}" th:text="${board.title}"></a>-->
 <!--    </td>-->
-<!--    <td th:text="${board.content}"></td>-->
+<!--    <td th:text="${board.views}"></td>-->
+<!--    <td th:text="${board.likeCount}"></td>-->
 <!--  </tr>-->
 <!--  </tbody>-->
 <!--</table>-->
-
+<!--<script>-->
+<!--  const pagingReq = () => {-->
+<!--  location.href = "/";-->
+<!--  }-->
+<!--</script>-->
 <!--</body>-->
 <!--</html>-->
+
 
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
@@ -83,12 +140,14 @@
 <!-- 글쓰기 버튼 -->
 <div class="text-center">
   <a class="btn btn-primary btn-write" th:href="@{/board/new}">글쓰기</a>
+  <button onclick="pagingReq()">페이징 목록</button>
 </div>
 
 <!-- 게시글 목록 -->
 <table class="table table-striped">
   <thead>
   <tr>
+    <th>작성자</th>
     <th>제목</th>
     <th>조회 수</th>
     <th>좋아요 수</th>
@@ -96,6 +155,7 @@
   </thead>
   <tbody>
   <tr th:each="board : ${boardList}">
+    <td th:text="${board.writer}"></td>
     <!-- 클릭 시 상세 페이지로 이동하는 링크 -->
     <td>
       <a class="btn btn-link" th:href="@{/board/{boardId}(boardId=${board.id})}" th:text="${board.title}"></a>
@@ -105,6 +165,40 @@
   </tr>
   </tbody>
 </table>
+
+<div th:if="${!boardList.isEmpty()}">
+  <ul class="pagination"
+      th:with="
+            pageNumber = ${boardList.pageable.pageNumber},
+            pageSize = ${boardList.pageable.pageSize},
+            totalPages = ${boardList.totalPages},
+            startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
+            tempEndPage = ${startPage + pageSize - 1},
+            endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})">
+
+    <li th:classappend="${boardList.first} ? 'disabled'" class="page-item">
+      <a class="page-link" th:href="${boardList.first} ? '#' : @{/(page=${pageNumber - 1})}">
+        <span aria-hidden="true">&lt;</span>
+      </a>
+    </li>
+
+    <li th:each="page: ${#numbers.sequence(startPage, endPage)}" th:classappend="${page == pageNumber + 1} ? 'active'" class="page-item">
+      <a th:text="${page}" class="page-link" th:href="@{/(page=${page - 1})}"></a>
+    </li>
+
+    <li th:classappend="${boardList.last} ? 'disabled'" class="page-item">
+      <a class="page-link" th:href="${boardList.last} ? '#' : @{/(page=${pageNumber + 1})}" aria-label="Next">
+        <span aria-hidden="true">&gt;</span>
+      </a>
+    </li>
+  </ul>
+</div>
+
+<script>
+  const pagingReq = () => {
+    location.href = "/";
+  }
+</script>
 
 </body>
 </html>

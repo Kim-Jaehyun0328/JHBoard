@@ -4,6 +4,7 @@ import static jakarta.persistence.EnumType.*;
 
 import JHboard.project.domain.member.dto.CustomUserDetails;
 import JHboard.project.domain.member.dto.RegisterRqDto;
+import JHboard.project.global.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -20,7 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(of = {"id", "nickname", "username"})
-public class Member {
+public class Member extends BaseEntity {
 
   @Id @GeneratedValue
   @Column(name = "member_id")
