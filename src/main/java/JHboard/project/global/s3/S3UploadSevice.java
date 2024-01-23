@@ -31,25 +31,6 @@ public class S3UploadSevice {
    * @return url
    * @throws IOException
    */
-//  public String saveFile(MultipartFile multipartFile) throws IOException {
-//    String originalFilename = multipartFile.getOriginalFilename();
-//    ObjectMetadata metadata = new ObjectMetadata();
-//    metadata.setContentLength(multipartFile.getSize());
-//    metadata.setContentType(multipartFile.getContentType());
-//
-//    amazonS3.putObject(bucket, originalFilename, multipartFile.getInputStream(), metadata);
-//    return amazonS3.getUrl(bucket, originalFilename).toString();
-//  }
-//
-//  public ResponseEntity<UrlResource> downloadFile(String originalFileName) {
-//    UrlResource urlResource = new UrlResource(amazonS3.getUrl(bucket, originalFileName));
-//    String contentDisposition = "attachment; filename=\"" +  originalFileName + "\"";
-//
-//    return ResponseEntity.ok()
-//        .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
-//        .body(urlResource);
-//  }
-
   public List<BoardFile> saveFiles(List<MultipartFile> multipartFiles) throws IOException {
     List<BoardFile> boardFiles = new ArrayList<>();
     for (MultipartFile multipartFile : multipartFiles) {
