@@ -39,7 +39,7 @@ public class BoardController {
   private final LikeService likeService;
 
   @GetMapping("/")
-  public String home(Model model, @PageableDefault(size = 5, sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable) {
+  public String home(Model model, @PageableDefault(sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable) {
     Page<BoardRsDto> boards = boardService.findAll(pageable).map(BoardRsDto::toDtoForList);
 
     //요청한 페이지가 0보다 작거나 줄 수 있는 페이지보다 클 때
