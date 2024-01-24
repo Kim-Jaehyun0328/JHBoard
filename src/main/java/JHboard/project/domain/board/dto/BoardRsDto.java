@@ -3,12 +3,10 @@ package JHboard.project.domain.board.dto;
 
 import JHboard.project.domain.board.entity.Board;
 import JHboard.project.domain.comment.dto.CommentRsDto;
-import JHboard.project.global.BaseEntity;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.Data;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 

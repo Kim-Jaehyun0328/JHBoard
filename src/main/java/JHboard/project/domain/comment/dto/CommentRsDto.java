@@ -10,6 +10,7 @@ public class CommentRsDto {
   private Long id;
   private String content;
   private String writer;
+  private String username;
   private List<CommentRsDto> children = new ArrayList<>();
 
 
@@ -18,6 +19,7 @@ public class CommentRsDto {
     commentRsDto.id = comment.getId();
     commentRsDto.content = comment.getContent();
     commentRsDto.writer = comment.getMember().getNickname();
+    commentRsDto.username = comment.getMember().getUsername();
 
     return commentRsDto;
   }

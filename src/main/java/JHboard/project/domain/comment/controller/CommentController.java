@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,15 +36,38 @@ public class CommentController {
       //못 달게 해야 해
     }
     commentService.create(boardId, content, principal);
-    List<Comment> comments = commentService.findAllByBoardId(boardId);
-    List<CommentRsDto> commentRsDtos = comments.stream()
-        .map(c -> CommentRsDto.toDto(c)).collect(Collectors.toList());
+    List<CommentRsDto> commentRsDtos = commentService.getCommentsForBoardId(boardId);
     return new ResponseEntity<>(commentRsDtos, HttpStatus.OK);
   }
 
+  /**
+   * 댓글에 달린 답글을 위한 메소드
+   * @param boardId
+   * @param commentId
+   * @param content
+   * @param principal
+   */
   @PostMapping("/comment/{boardId}/{commentId}")
   public void writeChildComment(@PathVariable("boardId") Long boardId, @PathVariable("commentId") Long commentId,
       @RequestParam("content") String content, Principal principal) {
-
   }
+
+
+  @PostMapping("/comment/{boardId}/{commentId}/edit")
+  public ResponseEntity<List<CommentRsDto>> editComment(@PathVariable("boardId") Long boardId, @PathVariable("commentId") Long commentId,
+      @RequestBody String updateContent, Principal principal){
+    commentService.updateComment(boardId, commentId, updateContent, principal);
+    List<CommentRsDto> commentRsDtos = commentService.getCommentsForBoardId(boardId);
+    return new ResponseEntity<>(commentRsDtos, HttpStatus.OK);
+  }
+
+  @DeleteMapping("/comment/{boardId}/{commentId}/delete")
+  public ResponseEntity<List<CommentRsDto>> deleteComment(@PathVariable("boardId") Long boardId, @PathVariable("commentId") Long commentId,
+      Principal principal){
+    commentService.delete(commentId, principal);
+    List<CommentRsDto> commentRsDtos = commentService.getCommentsForBoardId(boardId);
+    return new ResponseEntity<>(commentRsDtos, HttpStatus.OK);
+  }
+
+
 }

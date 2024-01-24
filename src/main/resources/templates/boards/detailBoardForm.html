@@ -1,210 +1,3 @@
-<!--<!DOCTYPE html>-->
-<!--<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">-->
-<!--<head>-->
-<!--  <meta charset="UTF-8">-->
-<!--  <title>Board Detail</title>-->
-
-<!--  <style>-->
-<!--        img {-->
-<!--            max-width: 100%;-->
-<!--            max-height: 100vh;-->
-<!--        }-->
-<!--    </style>-->
-<!--</head>-->
-<!--<body>-->
-
-<!--<h2>Board Detail</h2>-->
-
-<!--<div th:if="${board}">-->
-<!--  <p><strong>Title:</strong> <span th:text="${board.title}"></span></p>-->
-<!--  <p><strong>Content:</strong> <span th:utext="${board.content}"></span></p>-->
-
-<!--  &lt;!&ndash; 게시글의 첨부 파일 목록 &ndash;&gt;-->
-<!--  <div th:if="${board.boardFileDtoList}">-->
-<!--    <p><strong>Attachments:</strong></p>-->
-<!--    <ul>-->
-<!--      <li th:each="file : ${board.boardFileDtoList}">-->
-<!--        <a th:href="@{'/boardFile/download/' + ${file.id}}" th:text="${file.originalFileName}"></a>-->
-<!--      </li>-->
-<!--    </ul>-->
-<!--  </div>-->
-
-<!--  &lt;!&ndash; 로그인을 한 경우 &ndash;&gt;-->
-<!--  <div sec:authorize-expr="isAuthenticated()">-->
-<!--    <form id="commentForm">-->
-<!--      <textarea name="content" id="commentContent" rows="4" cols="50"></textarea>-->
-<!--      <button type="button" onclick="addComment()">댓글 작성</button>-->
-<!--    </form>-->
-<!--  </div>-->
-
-<!--  &lt;!&ndash; 로그인하지 않은 경우 &ndash;&gt;-->
-<!--  <div sec:authorize-expr="!isAuthenticated()">-->
-<!--    <form id="commentForm" onsubmit="return false;">-->
-<!--            <textarea name="content" id="commentContent" rows="4" cols="50"-->
-<!--                      placeholder="로그인을 한 뒤 댓글을 작성하세요" disabled></textarea>-->
-<!--      <button type="button" onclick="showLoginAlert()">댓글 작성</button>-->
-<!--    </form>-->
-<!--  </div>-->
-
-<!--  &lt;!&ndash; 댓글 목록을 표시할 곳 &ndash;&gt;-->
-<!--  <div th:if="${board.comments}">-->
-<!--    <p><strong>댓글:</strong></p>-->
-<!--    <ul id="commentList">-->
-<!--      <li th:each="comment : ${board.comments}">-->
-<!--        <div>-->
-<!--          <span th:text="${comment.writer}"></span>-->
-<!--          <span th:text="${comment.content}"></span>-->
-<!--        </div>-->
-<!--      </li>-->
-<!--    </ul>-->
-<!--  </div>-->
-
-<!--  &lt;!&ndash; 수정 버튼 &ndash;&gt;-->
-<!--  <a th:href="@{'/board/' + ${board.id} + '/edit'}">Edit</a>-->
-
-<!--  &lt;!&ndash; 삭제 버튼 &ndash;&gt;-->
-<!--  <form th:action="@{'/board/' + ${board.id} + '/delete'}" method="post">-->
-<!--    <input type="hidden" name="_method" value="delete"/>-->
-<!--    <button type="submit">Delete</button>-->
-<!--  </form>-->
-
-<!--  &lt;!&ndash; 좋아요 &ndash;&gt;-->
-<!--  <div sec:authorize-expr="isAuthenticated()"-->
-<!--       th:unless="${#strings.equals(board.getWriter(),#authentication.name)}" class="d-block">-->
-<!--    <h2>로그인을 했고, 로그인 유저 != 게시글 작성자</h2>-->
-<!--    <input type="hidden" id="like_check" th:value="${like}">-->
-<!--    <img th:id="likeImg" src="/assets/img/empty.png" alt="" width="30px" height="30px">-->
-<!--    <span th:text="${board.likeCount}"></span>-->
-<!--  </div>-->
-
-<!--  &lt;!&ndash; 좋아요 &ndash;&gt;-->
-<!--  <div sec:authorize-expr="isAuthenticated()" th:if="${#strings.equals(board.getWriter(),#authentication.name)}"-->
-<!--       class="d-block">-->
-<!--    <h2>로그인을 했고, 로그인 유저 == 게시글 작성자</h2>-->
-<!--    <img th:id="likeImg" src="/assets/img/empty.png" alt="" width="30px" height="30px">-->
-<!--    <span th:text="${board.likeCount}"></span>-->
-<!--  </div>-->
-
-<!--  <div sec:authorize-expr="!isAuthenticated()">-->
-<!--    <h2>비로그인 유저</h2>-->
-<!--    <img id="loginCheck" src="/assets/img/empty.png" alt="" width="30px" height="30px">-->
-<!--    <span th:text="${board.likeCount}"></span>-->
-<!--  </div>-->
-
-<!--  <div th:unless="${board}">-->
-<!--    <p>게시글이 존재하지 않습니다.</p>-->
-<!--  </div>-->
-
-<!--</div>-->
-
-<!--  <script th:inline="javascript">-->
-<!--    function showLoginAlert() {-->
-<!--        alert("로그인 후 이용할 수 있습니다.");-->
-<!--    }-->
-
-<!--    function addComment() {-->
-<!--        const commentContent = document.getElementById('commentContent').value;-->
-<!--        const boardId = [[${board.id}]];-->
-
-<!--        if (commentContent.trim() === "") {-->
-<!--            alert("댓글 내용을 입력하세요.");-->
-<!--            return;-->
-<!--        }-->
-
-<!--        fetch(`/comment/${boardId}`, {-->
-<!--            method: 'POST',-->
-<!--            headers: {-->
-<!--                'Content-Type': 'application/json; charset=utf-8'-->
-<!--            },-->
-<!--            body: JSON.stringify({content: commentContent})-->
-<!--        })-->
-<!--            .then(response => response.json())-->
-<!--            .then(data => {-->
-<!--                if (data != null) {-->
-<!--                    updateCommentList(boardId, data);-->
-<!--                    // textarea 비우기-->
-<!--                    document.getElementById('commentContent').value = '';-->
-<!--                } else {-->
-<!--                    console.error("댓글이 없습니다.");-->
-<!--                }-->
-<!--            })-->
-<!--            .catch(error => {-->
-<!--                console.error('댓글 전송 중 오류 발생:', error);-->
-<!--            });-->
-<!--    }-->
-
-<!--    function updateCommentList(boardId, comments) {-->
-<!--        const commentList = document.getElementById("commentList");-->
-<!--        comments.reverse(); // 새로운 댓글이 맨 위에 나오도록 순서를 뒤집습니다.-->
-<!--        commentList.innerHTML = '';-->
-<!--        comments.forEach(comment => {-->
-<!--            const commentItem = document.createElement('li');-->
-<!--            commentItem.innerHTML = '<div>' +-->
-<!--                '<span>' + comment.writer + '</span>' +-->
-<!--                '<span>' + comment.content + '</span>' +-->
-<!--                '</div>';-->
-<!--            commentList.appendChild(commentItem);-->
-<!--        });-->
-<!--    }-->
-
-<!--window.onload = function () {-->
-<!--  const clickLikeUrl = "/assets/img/full.jpeg";-->
-<!--  const emptyLikeUrl = "/assets/img/empty.png";-->
-
-<!--  if ([[${#authentication.name}]] === "anonymousUser") {-->
-<!--      document.getElementById('loginCheck').addEventListener('click', function () {-->
-<!--          alert("로그인 후 이용할 수 있습니다.");-->
-<!--      });-->
-<!--  } else {-->
-<!--      updateLikeImage();-->
-<!--      document.getElementById('likeImg').addEventListener('click', function () {-->
-<!--          const boardId = [[${board.id}]];-->
-<!--          const likeVal = document.getElementById('like_check').value;-->
-
-<!--          if (likeVal === 'true') {-->
-<!--              const conCheck = confirm("현재 게시물 추천을 취소하시겠습니까?");-->
-<!--              if (conCheck) {-->
-<!--                  sendLikeRequest(boardId, emptyLikeUrl);-->
-<!--              }-->
-<!--          } else if (likeVal === 'false') {-->
-<!--              const conCheck = confirm("현재 게시물을 추천하시겠습니까?");-->
-<!--              if (conCheck) {-->
-<!--                  sendLikeRequest(boardId, clickLikeUrl);-->
-<!--              }-->
-<!--          }-->
-<!--      });-->
-<!--  }-->
-
-<!--  function updateLikeImage() {-->
-<!--      let likeVal = document.getElementById('like_check').value;-->
-<!--      if (likeVal === 'true') {-->
-<!--          document.getElementById('likeImg').src = clickLikeUrl;-->
-<!--      } else if (likeVal === 'false') {-->
-<!--          document.getElementById('likeImg').src = emptyLikeUrl;-->
-<!--      }-->
-<!--  }-->
-
-<!--  function sendLikeRequest(boardId, imageUrl) {-->
-<!--      fetch(`/like/${boardId}`, {-->
-<!--          method: 'POST',-->
-<!--          headers: {-->
-<!--              'Content-Type': 'application/json; charset=utf-8'-->
-<!--          },-->
-<!--      })-->
-<!--          .then(response => response.json())-->
-<!--          .then(data => {-->
-<!--              document.getElementById('likeImg').src = imageUrl;-->
-<!--              location.reload();-->
-<!--          })-->
-<!--          .catch(error => {-->
-<!--              alert(JSON.stringify(error));-->
-<!--          });-->
-<!--  }-->
-<!--};-->
-<!--    </script>-->
-<!--</body>-->
-<!--</html>-->
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
@@ -253,7 +46,7 @@
     </form>
   </div>
 
-  <!-- 댓글 목록을 표시할 곳 -->
+  <!-- comment 템플릿 부분 -->
   <div th:if="${board.comments}">
     <p><strong>댓글:</strong></p>
     <ul id="commentList">
@@ -261,7 +54,33 @@
         <div>
           <span th:text="${comment.writer}"></span>
           <span th:text="${comment.content}"></span>
+          <button th:if="${#authentication.name == comment.username}" type="button"
+                  th:onclick="showEditForm([[${comment?.id}]], [[${comment.content}]])">수정</button>
+          <button th:if="${#authentication.name == comment.username}" type="button"
+                  th:onclick="'deleteComment(' + ${board.id} + ',' + ${comment?.id} + ')'" >삭제</button>
+          <!-- 답글 달기 버튼 -->
+          <button type="button" sec:authorize-expr="isAuthenticated()"
+                  th:onclick="'showReplyForm(' + ${comment?.id} + ')'">답글 달기</button>
+          <!-- 답글을 달 수 있는 textarea -->
+          <div id="'replyFormContainer_' + ${comment?.id} " style="display: none;">
+            <textarea id="replyContent_[[${comment?.id}]]" rows="4" cols="50"></textarea>
+            <button type="button" th:onclick="'addReply(' + ${comment?.id} + ')'">답글 작성</button>
+          </div>
+          <!-- 답글 보기 버튼 -->
+          <button type="button" th:if="${comment.children.size() > 0}"
+                  th:onclick="showReplies([[${comment?.id}]])">답글 보기</button>
+          <!-- 답글 리스트 표시할 곳 -->
+          <ul id="replies_[[${comment?.id}]]" style="display: none;">
+            <li th:each="reply : ${comment.children}">
+              <!-- 답글 내용 표시 -->
+              <div>
+                <span th:text="${reply.writer}"></span>
+                <span th:text="${reply.content}"></span>
+              </div>
+            </li>
+          </ul>
         </div>
+        <div id="editFormContainer"></div>
       </li>
     </ul>
   </div>
@@ -273,7 +92,7 @@
   <form th:action="@{'/board/' + ${board.id} + '/delete'}" method="post">
     <input type="hidden" name="_method" value="delete"/>
     <button type="submit">Delete</button>
-  </form>
+  </formㅅ
 
   <!-- 좋아요 -->
   <div sec:authorize-expr="isAuthenticated()"
@@ -290,7 +109,7 @@
     <h2>로그인을 했고, 로그인 유저 == 게시글 작성자</h2>
     <img th:id="likeImg" src="/assets/img/empty.png" alt="" width="30px" height="30px">
     <span th:text="${board.likeCount}"></span>
-  </div>
+  </div>ㅅ
 
   <div sec:authorize-expr="!isAuthenticated()">
     <h2>비로그인 유저</h2>
@@ -305,109 +124,185 @@
 </div>
 
 <script th:inline="javascript">
-    function showLoginAlert() {
-        alert("로그인 후 이용할 수 있습니다.");
-    }
+function showEditForm(commentId, initialContent) {
+        console.log("hello");
 
-    function addComment() {
-        const commentContent = document.getElementById('commentContent').value;
-        const boardId = [[${board.id}]];
-
-        if (commentContent.trim() === "") {
-            alert("댓글 내용을 입력하세요.");
+        // 댓글 수정 폼이 이미 열려 있는지 확인
+        const existingForm = document.getElementById(`editForm_${commentId}`);
+        if (existingForm) {
+            // 이미 열려 있으면 닫기
+            existingForm.remove();
             return;
         }
 
-        fetch(`/comment/${boardId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json; charset=utf-8'
-            },
-            body: JSON.stringify({content: commentContent})
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data != null) {
-                    updateCommentList(boardId, data);
-                    // textarea 비우기
-                    document.getElementById('commentContent').value = '';
-                } else {
-                    console.error("댓글이 없습니다.");
-                }
-            })
-            .catch(error => {
-                console.error('댓글 전송 중 오류 발생:', error);
-            });
+        // 댓글 수정 폼 생성
+        const editForm = document.createElement('form');
+        editForm.id = `editForm_${commentId}`;
+        editForm.innerHTML = `
+            <textarea id="editContent_${commentId}" rows="4" cols="50">${initialContent}</textarea>
+            <button type="button" onclick="submitEdit(${commentId})">수정 완료</button>
+        `;
+
+        // 댓글 목록에 수정 폼 추가
+        const commentDiv = document.getElementById(`editFormContainer`);
+        commentDiv.innerHTML = ''; // 이전에 생성된 폼이 있다면 초기화
+        commentDiv.appendChild(editForm);
     }
 
-    function updateCommentList(boardId, comments) {
-        const commentList = document.getElementById("commentList");
-        comments.reverse(); // 새로운 댓글이 맨 위에 나오도록 순서를 뒤집습니다.
-        commentList.innerHTML = '';
-        comments.forEach(comment => {
-            const commentItem = document.createElement('li');
-            commentItem.innerHTML = '<div>' +
-                '<span>' + comment.writer + '</span>' +
-                '<span>' + comment.content + '</span>' +
-                '</div>';
-            commentList.appendChild(commentItem);
-        });
-    }
+function submitEdit(commentId) {
+  const editedContent = document.getElementById(`editContent_${commentId}`).value;
+  const boardId = [[${board.id}]];
 
-window.onload = function () {
-  const clickLikeUrl = "/assets/img/full.jpeg";
-  const emptyLikeUrl = "/assets/img/empty.png";
-
-  if ([[${#authentication.name}]] === "anonymousUser") {
-      document.getElementById('loginCheck').addEventListener('click', function () {
-          alert("로그인 후 이용할 수 있습니다.");
-      });
-  } else {
-      updateLikeImage();
-      document.getElementById('likeImg').addEventListener('click', function () {
-          const boardId = [[${board.id}]];
-          const likeVal = document.getElementById('like_check').value;
-
-          if (likeVal === 'true') {
-              const conCheck = confirm("현재 게시물 추천을 취소하시겠습니까?");
-              if (conCheck) {
-                  sendLikeRequest(boardId, emptyLikeUrl);
-              }
-          } else if (likeVal === 'false') {
-              const conCheck = confirm("현재 게시물을 추천하시겠습니까?");
-              if (conCheck) {
-                  sendLikeRequest(boardId, clickLikeUrl);
-              }
+  fetch(`/comment/${boardId}/${commentId}/edit`, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json; charset=utf-8'
+      },
+      body: editedContent
+  })
+      .then(response => response.json())
+      .then(data => {
+          if (data) {
+              // 성공적으로 수정되었을 때 화면 갱신 등의 추가 작업 수행
+              // 예: 댓글 목록 다시 불러오기
+              updateCommentList(boardId, data);
+          } else {
+              alert('댓글 수정에 실패하였습니다.');
           }
+      })
+      .catch(error => {
+          console.error('댓글 수정 중 오류 발생:', error);
+      });
+}
+
+function deleteComment(boardId, commentId) {
+  const conCheck = confirm("댓글을 삭제하시겠습니까?");
+  if (conCheck) {
+    fetch(`/comment/${boardId}/${commentId}/delete`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8'
+      },
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data) {
+          // 성공적으로 삭제되었을 때 화면 갱신 등의 추가 작업 수행
+          // 예: 댓글 목록 다시 불러오기
+          updateCommentList(boardId, data);
+        } else {
+          alert('댓글 삭제에 실패하였습니다.');
+        }
+      })
+      .catch(error => {
+        console.error('댓글 삭제 중 오류 발생:', error);
       });
   }
+}
 
-  function updateLikeImage() {
-      let likeVal = document.getElementById('like_check').value;
-      if (likeVal === 'true') {
-          document.getElementById('likeImg').src = clickLikeUrl;
-      } else if (likeVal === 'false') {
-          document.getElementById('likeImg').src = emptyLikeUrl;
-      }
+  function showLoginAlert() {
+      alert("로그인 후 이용할 수 있습니다.");
   }
 
-  function sendLikeRequest(boardId, imageUrl) {
-      fetch(`/like/${boardId}`, {
+  function addComment() {
+      const commentContent = document.getElementById('commentContent').value;
+      const boardId = [[${board.id}]];
+
+      if (commentContent.trim() === "") {
+          alert("댓글 내용을 입력하세요.");
+          return;
+      }
+
+      fetch(`/comment/${boardId}`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json; charset=utf-8'
           },
+          body: commentContent
       })
           .then(response => response.json())
           .then(data => {
-              document.getElementById('likeImg').src = imageUrl;
-              location.reload();
+              if (data != null) {
+                  updateCommentList(boardId, data);
+                  // textarea 비우기
+                  document.getElementById('commentContent').value = '';
+              } else {
+                  console.error("댓글이 없습니다.");
+              }
           })
           .catch(error => {
-              alert(JSON.stringify(error));
+              console.error('댓글 전송 중 오류 발생:', error);
           });
   }
+
+  function updateCommentList(boardId, comments) {
+      const commentList = document.getElementById("commentList");
+      //comments.reverse(); // 새로운 댓글이 맨 위에 나오도록 순서를 뒤집습니다.
+      commentList.innerHTML = '';
+      comments.forEach(comment => {
+          const commentItem = document.createElement('li');
+          commentItem.innerHTML = '<div>' +
+              '<span>' + comment.writer + '</span>' +
+              '<span>' + comment.content + '</span>' +
+              '</div>';
+          commentList.appendChild(commentItem);
+      });
+  }
+
+window.onload = function () {
+const clickLikeUrl = "/assets/img/full.jpeg";
+const emptyLikeUrl = "/assets/img/empty.png";
+
+if ([[${#authentication.name}]] === "anonymousUser") {
+    document.getElementById('loginCheck').addEventListener('click', function () {
+        alert("로그인 후 이용할 수 있습니다.");
+    });
+} else {
+    updateLikeImage();
+    document.getElementById('likeImg').addEventListener('click', function () {
+        const boardId = [[${board.id}]];
+        const likeVal = document.getElementById('like_check').value;
+
+        if (likeVal === 'true') {
+            const conCheck = confirm("현재 게시물 추천을 취소하시겠습니까?");
+            if (conCheck) {
+                sendLikeRequest(boardId, emptyLikeUrl);
+            }
+        } else if (likeVal === 'false') {
+            const conCheck = confirm("현재 게시물을 추천하시겠습니까?");
+            if (conCheck) {
+                sendLikeRequest(boardId, clickLikeUrl);
+            }
+        }
+    });
+}
+
+function updateLikeImage() {
+    let likeVal = document.getElementById('like_check').value;
+    if (likeVal === 'true') {
+        document.getElementById('likeImg').src = clickLikeUrl;
+    } else if (likeVal === 'false') {
+        document.getElementById('likeImg').src = emptyLikeUrl;
+    }
+}
+
+function sendLikeRequest(boardId, imageUrl) {
+    fetch(`/like/${boardId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json; charset=utf-8'
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('likeImg').src = imageUrl;
+            location.reload();
+        })
+        .catch(error => {
+            alert(JSON.stringify(error));
+        });
+}
 };
-    </script>
+</script>
 </body>
 </html>

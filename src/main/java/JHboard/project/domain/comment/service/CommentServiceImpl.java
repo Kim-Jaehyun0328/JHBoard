@@ -3,6 +3,7 @@ package JHboard.project.domain.comment.service;
 import JHboard.project.domain.board.entity.Board;
 import JHboard.project.domain.board.service.BoardService;
 import JHboard.project.domain.comment.dto.CommentRqDto;
+import JHboard.project.domain.comment.dto.CommentRsDto;
 import JHboard.project.domain.comment.entity.Comment;
 import JHboard.project.domain.comment.repository.CommentRepository;
 import JHboard.project.domain.member.entity.Member;
@@ -11,6 +12,7 @@ import com.amazonaws.services.kms.model.NotFoundException;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +42,18 @@ public class CommentServiceImpl implements CommentService{
 
   @Transactional
   @Override
+  public void updateComment(Long boardId, Long commentId, String updateContent, Principal principal) {
+    Comment comment = commentRepository.findById(commentId)
+        .orElseThrow(() -> new NotFoundException("옳지 않은 접근입니다."));
+
+    if(!comment.getMember().getUsername().equals(principal.getName())){
+      throw new NotFoundException("옳지 않은 접근입니다.");
+    }
+    comment.updateComment(updateContent);
+  }
+
+  @Transactional
+  @Override
   public Comment create(Long boardId, String content, Principal principal) {
     String username = principal.getName();
     Member member = memberService.findByUsername(username)
@@ -54,7 +68,13 @@ public class CommentServiceImpl implements CommentService{
 
   @Transactional
   @Override
-  public void delete(Long commentId) {
+  public void delete(Long commentId, Principal principal) {
+    Comment comment = commentRepository.findById(commentId)
+        .orElseThrow(() -> new NotFoundException("옳지 않은 접근입니다."));
+
+    if(!comment.getMember().getUsername().equals(principal.getName())){
+      throw new NotFoundException("옳지 않은 접근입니다.");
+    }
     commentRepository.deleteById(commentId);
   }
 
@@ -66,8 +86,14 @@ public class CommentServiceImpl implements CommentService{
             "Could not found member id: " + commentRqDto.getMemberId()));
     boardService.findById(boardId)
         .orElseThrow(() -> new NotFoundException("Could not found board id: " + boardId));
+  }
 
 
+  @Override
+  public List<CommentRsDto> getCommentsForBoardId(Long boardId) {
+    List<Comment> comments = findAllByBoardId(boardId);
 
+    return comments.stream()
+        .map(c -> CommentRsDto.toDto(c)).collect(Collectors.toList());
   }
 }

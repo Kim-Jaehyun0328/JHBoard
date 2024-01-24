@@ -16,7 +16,6 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Entity
 @Getter
@@ -54,6 +53,10 @@ public class Comment extends BaseEntity {
     comment.content = content;
 
     return comment;
+  }
+
+  public void updateComment(String updateContent){
+    this.content = updateContent;
   }
 
 
