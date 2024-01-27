@@ -5,7 +5,6 @@ import JHboard.project.domain.comment.entity.Comment;
 import JHboard.project.domain.like.entity.Like;
 import JHboard.project.domain.member.entity.Member;
 import JHboard.project.global.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -36,6 +35,7 @@ public class Board extends BaseEntity {
 
   private int views = 0;
   private int likeCount = 0;
+  private int commentCnt = 0;
 
   @ManyToOne(fetch = FetchType.LAZY)  //원래는 lazy이나 게시글을 가져올때 보통 멤버를 무조건 가져오기 때문에 eager로 설정해봄
   @JoinColumn(name = "member_id")
@@ -71,6 +71,10 @@ public class Board extends BaseEntity {
 
   public void updateLikeCount(int num) {
     this.likeCount += num;
+  }
+
+  public void updateCommentCount(int num) {
+    this.commentCnt += num;
   }
 
 

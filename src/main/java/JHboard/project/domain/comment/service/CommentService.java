@@ -10,9 +10,25 @@ public interface CommentService {
 
   List<Comment> findAll();
 
+
   Comment create(Long boardId, String content, Principal principal);
 
-  void delete(Long commentId);
+  void delete(Long commentId, Principal principal);
 
   List<Comment> findAllByBoardId(Long boardId);
+
+  void updateComment(Long boardId, Long commentId, String content, Principal principal);
+
+
+
+
+  /**
+   * 자식 댓글(답글) 생성
+   * @param boardId
+   * @param commentId
+   * @param content
+   * @param principal
+   * @return
+   */
+  Comment createChildComment(Long boardId, Long commentId, String content, Principal principal);
 }

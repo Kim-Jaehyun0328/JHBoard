@@ -1,64 +1,39 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <title>Edit Board</title>
-  <!-- CKEditor 스크립트 추가 -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <script src="/js/build/ckeditor.js"></script>
-
-  <style>
-    .ck.ck-editor {
-      width: 80%;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .ck-editor__editable {
-      height: 80vh;
-    }
-
-    form {
-      text-align: center;
-    }
-  </style>
-</head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/default_layout">
 <body>
+<th:block layout:fragment="content">
+  <h2>Edit Board</h2>
 
-<h2>Edit Board</h2>
+  <form th:action="@{'/board/' + ${board.id} + '/edit'}" th:object="${board}" method="post" enctype="multipart/form-data">
 
-<form th:action="@{'/board/' + ${board.id} + '/edit'}" th:object="${board}" method="post" enctype="multipart/form-data">
+    <input type="hidden" th:field="*{id}"/>
 
-  <input type="hidden" th:field="*{id}"/>
+    <label for="title">Title:</label>
+    <input type="text" id="title" th:field="*{title}" required/>
+    <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
 
-  <label for="title">Title:</label>
-  <input type="text" id="title" th:field="*{title}" required/>
-  <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
+    <br/>
 
-  <br/>
+    <textarea name="content" id="content" th:field="*{content}" style="display: none;"></textarea><br>
 
-  <textarea name="content" id="content" th:field="*{content}" style="display: none;"></textarea><br>
+    <br/>
 
-  <br/>
+    <!-- Display the filenames if they exist -->
+    <div th:each="file : ${board.boardFileDtoList}">
+      <p th:text="${file.originalFileName}"></p>
+    </div>
 
-  <!-- Display the filenames if they exist -->
-  <div th:each="file : ${board.boardFileDtoList}">
-    <p th:text="${file.originalFileName}"></p>
-  </div>
+    <label for="multipartFileList">Attach Files:</label>
+    <input type="file" id="multipartFileList" name="multipartFileList" multiple/>
 
-  <label for="multipartFileList">Attach Files:</label>
-  <input type="file" id="multipartFileList" name="multipartFileList" multiple/>
+    <br/>
 
-  <br/>
+    <button type="submit">Update</button>
+  </form>
 
-  <button type="submit">Update</button>
-</form>
-
-<a href="/">Back to Home</a>
-
+  <a href="/">Back to Home</a>
+</th:block>
 <script>
-
   ClassicEditor.create(document.querySelector('#content'), {
     language: "ko",
     ckfinder: {
@@ -66,8 +41,6 @@
       withCredentials: true
     }
   });
-
 </script>
-
 </body>
 </html>

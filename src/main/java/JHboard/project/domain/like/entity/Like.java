@@ -2,7 +2,6 @@ package JHboard.project.domain.like.entity;
 
 import JHboard.project.domain.board.entity.Board;
 import JHboard.project.domain.member.entity.Member;
-import JHboard.project.global.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

@@ -1,217 +1,54 @@
-<!--<!DOCTYPE html>-->
-<!--<html xmlns:th="http://www.thymeleaf.org">-->
-<!--<head>-->
-<!--  <meta charset="UTF-8">-->
-<!--  <title>Home</title>-->
-<!--  &lt;!&ndash; 부트스트랩 링크 추가 &ndash;&gt;-->
-<!--  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"-->
-<!--        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">-->
-<!--  &lt;!&ndash; 추가적인 CSS 스타일링 &ndash;&gt;-->
-<!--  <style>-->
-<!--    body {-->
-<!--      padding-top: 20px;-->
-<!--    }-->
-
-<!--    .navbar {-->
-<!--      background-color: #007bff;-->
-<!--    }-->
-
-<!--    .navbar-brand,-->
-<!--    .navbar-nav .nav-link {-->
-<!--      color: #ffffff;-->
-<!--    }-->
-
-<!--    table {-->
-<!--      width: 80%;-->
-<!--      margin: 20px auto;-->
-<!--    }-->
-
-<!--    .btn-write {-->
-<!--      margin-bottom: 20px;-->
-<!--    }-->
-<!--  </style>-->
-<!--</head>-->
-<!--<body>-->
-
-<!--&lt;!&ndash; 네비게이션 바 &ndash;&gt;-->
-<!--<nav class="navbar navbar-expand-lg navbar-dark">-->
-<!--  <a class="navbar-brand" href="/">JHboard</a>-->
-<!--  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"-->
-<!--          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">-->
-<!--    <span class="navbar-toggler-icon"></span>-->
-<!--  </button>-->
-<!--  <div class="collapse navbar-collapse" id="navbarNav">-->
-<!--    <ul class="navbar-nav ml-auto">-->
-<!--      <li class="nav-item">-->
-<!--        <a class="nav-link" href="/login">로그인</a>-->
-<!--      </li>-->
-<!--    </ul>-->
-<!--  </div>-->
-<!--</nav>-->
-
-<!--&lt;!&ndash; 글쓰기 버튼 &ndash;&gt;-->
-<!--<div class="text-center">-->
-<!--  <a class="btn btn-primary btn-write" th:href="@{/board/new}">글쓰기</a>-->
-<!--  <button onclick="pagingReq()">페이징 목록</button>-->
-<!--</div>-->
-
-<!--&lt;!&ndash; 게시글 목록 &ndash;&gt;-->
-<!--<table class="table table-striped">-->
-<!--  <thead>-->
-<!--  <tr>-->
-<!--    <th>작성자</th>-->
-<!--    <th>제목</th>-->
-<!--    <th>조회 수</th>-->
-<!--    <th>좋아요 수</th>-->
-<!--  </tr>-->
-<!--  </thead>-->
-<!--  <tbody>-->
-<!--  <tr th:each="board : ${boardList}">-->
-<!--    <td th:text="${board.writer}"></td>-->
-<!--    &lt;!&ndash; 클릭 시 상세 페이지로 이동하는 링크 &ndash;&gt;-->
-<!--    <td>-->
-<!--      <a class="btn btn-link" th:href="@{/board/{boardId}(boardId=${board.id})}" th:text="${board.title}"></a>-->
-<!--    </td>-->
-<!--    <td th:text="${board.views}"></td>-->
-<!--    <td th:text="${board.likeCount}"></td>-->
-<!--  </tr>-->
-<!--  </tbody>-->
-<!--</table>-->
-
-<!--&lt;!&ndash; 페이징 버튼 추가 &ndash;&gt;-->
-<!--<div class="text-center">-->
-<!--  <ul class="pagination"-->
-<!--      th:with="-->
-<!--            pageNumber = ${boardList.pageable.pageNumber},-->
-<!--            pageSize = ${boardList.pageable.pageSize},-->
-<!--            totalPages = ${boardList.totalPages},-->
-<!--            startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},-->
-<!--            tempEndPage = ${startPage + pageSize - 1},-->
-<!--            endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})">-->
-
-<!--    &lt;!&ndash; First 버튼 &ndash;&gt;-->
-<!--    <li th:classappend="${boardList.first} ? 'disabled'" class="page-item">-->
-<!--      <a class="page-link" th:href="${boardList.first} ? '#' : @{/(page=0)}">-->
-<!--        <span aria-hidden="true">&lt;&lt;</span>-->
-<!--      </a>-->
-<!--    </li>-->
-
-<!--    &lt;!&ndash; Previous 버튼 &ndash;&gt;-->
-<!--    <li th:classappend="${boardList.first} ? 'disabled'" class="page-item">-->
-<!--      <a class="page-link" th:href="${boardList.first} ? '#' : @{/(page=${pageNumber - 1})}">-->
-<!--        <span aria-hidden="true">&lt;</span>-->
-<!--      </a>-->
-<!--    </li>-->
-
-<!--    &lt;!&ndash; 페이지 번호 버튼 &ndash;&gt;-->
-<!--    <li th:each="page: ${#numbers.sequence(startPage, endPage)}" th:classappend="${page == pageNumber + 1} ? 'active'" class="page-item">-->
-<!--      <a th:text="${page}" class="page-link" th:href="@{/(page=${page - 1})}"></a>-->
-<!--    </li>-->
-
-<!--    &lt;!&ndash; Next 버튼 &ndash;&gt;-->
-<!--    <li th:classappend="${boardList.last} ? 'disabled'" class="page-item">-->
-<!--      <a class="page-link" th:href="${boardList.last} ? '#' : @{/(page=${pageNumber + 1})}">-->
-<!--        <span aria-hidden="true">&gt;</span>-->
-<!--      </a>-->
-<!--    </li>-->
-
-<!--    &lt;!&ndash; Last 버튼 &ndash;&gt;-->
-<!--    <li th:classappend="${boardList.last} ? 'disabled'" class="page-item">-->
-<!--      <a class="page-link" th:href="${boardList.last} ? '#' : @{/(page=${totalPages - 1})}">-->
-<!--        <span aria-hidden="true">&gt;&gt;</span>-->
-<!--      </a>-->
-<!--    </li>-->
-<!--  </ul>-->
-<!--</div>-->
-
-
-<!--</body>-->
-<!--</html>-->
-
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <title>Home</title>
-  <!-- 부트스트랩 링크 추가 -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <!-- 추가적인 CSS 스타일링 -->
-  <style>
-    body {
-      padding-top: 20px;
-    }
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/default_layout">
+<th:block layout:fragment="content">
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <a class="navbar-brand" href="/">JHboard</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/login">로그인</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
 
-    .navbar {
-      background-color: #007bff;
-    }
-
-    .navbar-brand,
-    .navbar-nav .nav-link {
-      color: #ffffff;
-    }
-
-    table {
-      width: 80%;
-      margin: 20px auto;
-    }
-
-    .btn-write {
-      margin-bottom: 20px;
-    }
-  </style>
-</head>
-<body>
-
-<!-- 네비게이션 바 -->
-<nav class="navbar navbar-expand-lg navbar-dark">
-  <a class="navbar-brand" href="/">JHboard</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="/login">로그인</a>
-      </li>
-    </ul>
+  <!-- 글쓰기 버튼 -->
+  <div class="text-center">
+    <a class="btn btn-primary btn-write" th:href="@{/board/new}">글쓰기</a>
+    <button onclick="pagingReq()">페이징 목록</button>
   </div>
-</nav>
 
-<!-- 글쓰기 버튼 -->
-<div class="text-center">
-  <a class="btn btn-primary btn-write" th:href="@{/board/new}">글쓰기</a>
-  <button onclick="pagingReq()">페이징 목록</button>
-</div>
+  <!-- 게시글 목록 -->
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>작성자</th>
+      <th>제목</th>
+      <th>조회 수</th>
+      <th>좋아요 수</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="board : ${boardList}">
+      <td th:text="${board.writer}"></td>
+      <!-- 클릭 시 상세 페이지로 이동하는 링크 -->
+      <td>
+        <a class="btn btn-link" th:href="@{/board/{boardId}(boardId=${board.id})}" th:text="${board.title}"></a>
+      </td>
+      <td th:text="${board.views}"></td>
+      <td th:text="${board.likeCount}"></td>
+    </tr>
+    </tbody>
+  </table>
 
-<!-- 게시글 목록 -->
-<table class="table table-striped">
-  <thead>
-  <tr>
-    <th>작성자</th>
-    <th>제목</th>
-    <th>조회 수</th>
-    <th>좋아요 수</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr th:each="board : ${boardList}">
-    <td th:text="${board.writer}"></td>
-    <!-- 클릭 시 상세 페이지로 이동하는 링크 -->
-    <td>
-      <a class="btn btn-link" th:href="@{/board/{boardId}(boardId=${board.id})}" th:text="${board.title}"></a>
-    </td>
-    <td th:text="${board.views}"></td>
-    <td th:text="${board.likeCount}"></td>
-  </tr>
-  </tbody>
-</table>
-
-<!-- 페이징 버튼 추가 -->
-<div class="text-center">
-  <ul class="pagination"
-      th:with="
+  <!-- 페이징 버튼 추가 -->
+  <div class="text-center">
+    <ul class="pagination"
+        th:with="
             pageNumber = ${boardList.pageable.pageNumber},
             pageSize = ${boardList.pageable.pageSize},
             totalPages = ${boardList.totalPages},
@@ -219,41 +56,40 @@
             tempEndPage = ${startPage + pageSize - 1},
             endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})">
 
-    <!-- First 버튼 -->
-    <li th:classappend="${boardList.first} ? 'disabled'" class="page-item">
-      <a class="page-link" th:href="${boardList.first} ? '#' : '/?page=0'">
-        <span aria-hidden="true">&lt;&lt;</span>
-      </a>
-    </li>
+      <!-- First 버튼 -->
+      <li th:classappend="${boardList.first} ? 'disabled'" class="page-item">
+        <a class="page-link" th:href="${boardList.first} ? '#' : '/?page=0'">
+          <span aria-hidden="true">&lt;&lt;</span>
+        </a>
+      </li>
 
-    <!-- Previous 버튼 -->
-    <li th:classappend="${boardList.first} ? 'disabled'" class="page-item">
-      <a class="page-link" th:href="${boardList.first} ? '#' : '/?page=' + ${pageNumber - 1}">
-        <span aria-hidden="true">&lt;</span>
-      </a>
-    </li>
+      <!-- Previous 버튼 -->
+      <li th:classappend="${boardList.first} ? 'disabled'" class="page-item">
+        <a class="page-link" th:href="${boardList.first} ? '#' : '/?page=' + ${pageNumber - 1}">
+          <span aria-hidden="true">&lt;</span>
+        </a>
+      </li>
 
-    <!-- 페이지 번호 버튼 -->
-    <li th:each="page: ${#numbers.sequence(startPage, endPage)}" th:classappend="${page == pageNumber + 1} ? 'active'" class="page-item">
-      <a th:text="${page}" class="page-link" th:href="'/?page=' + ${page - 1}"></a>
-    </li>
+      <!-- 페이지 번호 버튼 -->
+      <li th:each="page: ${#numbers.sequence(startPage, endPage)}" th:classappend="${page == pageNumber + 1} ? 'active'" class="page-item">
+        <a th:text="${page}" class="page-link" th:href="'/?page=' + ${page - 1}"></a>
+      </li>
 
-    <!-- Next 버튼 -->
-    <li th:classappend="${boardList.last} ? 'disabled'" class="page-item">
-      <a class="page-link" th:href="${boardList.last} ? '#' : '/?page=' + ${pageNumber + 1}">
-        <span aria-hidden="true">&gt;</span>
-      </a>
-    </li>
+      <!-- Next 버튼 -->
+      <li th:classappend="${boardList.last} ? 'disabled'" class="page-item">
+        <a class="page-link" th:href="${boardList.last} ? '#' : '/?page=' + ${pageNumber + 1}">
+          <span aria-hidden="true">&gt;</span>
+        </a>
+      </li>
 
-    <!-- Last 버튼 -->
-    <li th:classappend="${boardList.last} ? 'disabled'" class="page-item">
-      <a class="page-link" th:href="${boardList.last} ? '#' : '/?page=' + ${totalPages - 1}">
-        <span aria-hidden="true">&gt;&gt;</span>
-      </a>
-    </li>
-  </ul>
-</div>
+      <!-- Last 버튼 -->
+      <li th:classappend="${boardList.last} ? 'disabled'" class="page-item">
+        <a class="page-link" th:href="${boardList.last} ? '#' : '/?page=' + ${totalPages - 1}">
+          <span aria-hidden="true">&gt;&gt;</span>
+        </a>
+      </li>
+    </ul>
+  </div>
 
-
-</body>
+</th:block>
 </html>

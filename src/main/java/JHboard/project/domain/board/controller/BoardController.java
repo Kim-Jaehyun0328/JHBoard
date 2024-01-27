@@ -4,6 +4,8 @@ import JHboard.project.domain.board.dto.BoardRqDto;
 import JHboard.project.domain.board.dto.BoardRsDto;
 import JHboard.project.domain.board.entity.Board;
 import JHboard.project.domain.board.service.BoardService;
+import JHboard.project.domain.comment.dto.CommentRqDto;
+import JHboard.project.domain.comment.entity.Comment;
 import JHboard.project.domain.like.service.LikeService;
 import JHboard.project.domain.member.dto.CustomUserDetails;
 import jakarta.validation.Valid;
@@ -37,6 +39,11 @@ public class BoardController {
 
   private final BoardService boardService;
   private final LikeService likeService;
+
+  @GetMapping("/test")
+  public String test(){
+    return "layout-sidenav-light";
+  }
 
   @GetMapping("/")
   public String home(Model model, @PageableDefault(sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -83,9 +90,17 @@ public class BoardController {
       like = likeService.findLike(boardId, memberId);
     }
 
+    Board board = boardService.findById(boardId).get();
+    log.info("=================================");
+    for (Comment c : board.getComments()) {
+      log.info("c={}", c.getContent());
+    }
+    log.info("=================================");
+
     BoardRsDto boardRsDto = boardService.detailBoard(boardId);
     model.addAttribute("board", boardRsDto);
     model.addAttribute("like", like);
+    model.addAttribute("commentForm", new CommentRqDto());
 
     return "boards/detailBoardForm";
   }
@@ -96,7 +111,7 @@ public class BoardController {
 
     if(boardService.checkUser(boardId, principal)){ //맞다면
       Optional<Board> board = boardService.findById(boardId);
-      BoardRsDto boardRsDto = BoardRsDto.toDto(board.get());
+      BoardRsDto boardRsDto = BoardRsDto.toDtoEdit(board.get());
       model.addAttribute("board", boardRsDto);
       return "boards/editBoardForm";
     }
