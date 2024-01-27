@@ -2,8 +2,6 @@ package JHboard.project.domain.comment.service;
 
 import JHboard.project.domain.board.entity.Board;
 import JHboard.project.domain.board.service.BoardService;
-import JHboard.project.domain.comment.dto.CommentRqDto;
-import JHboard.project.domain.comment.dto.CommentRsDto;
 import JHboard.project.domain.comment.entity.Comment;
 import JHboard.project.domain.comment.repository.CommentRepository;
 import JHboard.project.domain.member.entity.Member;
@@ -12,14 +10,15 @@ import com.amazonaws.services.kms.model.NotFoundException;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class CommentServiceImpl implements CommentService{
   private final CommentRepository commentRepository;
   private final MemberService memberService;
@@ -39,6 +38,9 @@ public class CommentServiceImpl implements CommentService{
   public List<Comment> findAllByBoardId(Long boardId) {
     return commentRepository.findByBoardId(boardId);
   }
+
+
+
 
   @Transactional
   @Override
@@ -62,6 +64,26 @@ public class CommentServiceImpl implements CommentService{
         .orElseThrow(() -> new NotFoundException("옳지 않은 게시판입니다."));
 
     Comment comment = Comment.toEntity(member, board, content);
+    board.updateCommentCount(1);
+
+    return commentRepository.save(comment);
+  }
+
+  @Override
+  @Transactional
+  public Comment createChildComment(Long boardId, Long commentId, String content, Principal principal) {
+    String username = principal.getName();
+    Member member = memberService.findByUsername(username)
+        .orElseThrow(() -> new NotFoundException("옳지 않은 유저입니다."));
+    Board board = boardService.findById(boardId)
+        .orElseThrow(() -> new NotFoundException("옳지 않은 게시판입니다."));
+    Comment parentComment = findById(commentId)
+        .orElseThrow(() -> new NotFoundException("옳지 않은 댓글입니다."));
+
+    Comment comment = Comment.toEntity(member, board, content);
+    comment.connetParentComment(parentComment);
+    parentComment.getChildren().add(comment);
+    board.updateCommentCount(1);
 
     return commentRepository.save(comment);
   }
@@ -75,25 +97,15 @@ public class CommentServiceImpl implements CommentService{
     if(!comment.getMember().getUsername().equals(principal.getName())){
       throw new NotFoundException("옳지 않은 접근입니다.");
     }
+
+    //자식 댓글(답글이라면)
+    if(comment.getParent() != null) {
+      comment.getBoard().updateCommentCount(-1);
+    }else{
+      log.info("==================================");
+      comment.getBoard().updateCommentCount((-1)*(comment.getChildren().size()+1));
+      log.info("==================================");
+    }
     commentRepository.deleteById(commentId);
-  }
-
-
-
-  public void insert(Long boardId, CommentRqDto commentRqDto) {
-    Member member = memberService.findById(commentRqDto.getMemberId())
-        .orElseThrow(() -> new NotFoundException(
-            "Could not found member id: " + commentRqDto.getMemberId()));
-    boardService.findById(boardId)
-        .orElseThrow(() -> new NotFoundException("Could not found board id: " + boardId));
-  }
-
-
-  @Override
-  public List<CommentRsDto> getCommentsForBoardId(Long boardId) {
-    List<Comment> comments = findAllByBoardId(boardId);
-
-    return comments.stream()
-        .map(c -> CommentRsDto.toDto(c)).collect(Collectors.toList());
   }
 }

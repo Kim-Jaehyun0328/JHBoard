@@ -1,6 +1,5 @@
 package JHboard.project.domain.comment.service;
 
-import JHboard.project.domain.comment.dto.CommentRsDto;
 import JHboard.project.domain.comment.entity.Comment;
 import java.security.Principal;
 import java.util.List;
@@ -11,6 +10,7 @@ public interface CommentService {
 
   List<Comment> findAll();
 
+
   Comment create(Long boardId, String content, Principal principal);
 
   void delete(Long commentId, Principal principal);
@@ -19,10 +19,16 @@ public interface CommentService {
 
   void updateComment(Long boardId, Long commentId, String content, Principal principal);
 
+
+
+
   /**
-   * Comment 엔티티 리스트를 db에서 가져온 뒤 dto로 변환 후에 반환
+   * 자식 댓글(답글) 생성
    * @param boardId
+   * @param commentId
+   * @param content
+   * @param principal
    * @return
    */
-  List<CommentRsDto> getCommentsForBoardId(Long boardId);
+  Comment createChildComment(Long boardId, Long commentId, String content, Principal principal);
 }

@@ -3,6 +3,7 @@ package JHboard.project.domain.comment.entity;
 import JHboard.project.domain.board.entity.Board;
 import JHboard.project.domain.member.entity.Member;
 import JHboard.project.global.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -57,6 +58,10 @@ public class Comment extends BaseEntity {
 
   public void updateComment(String updateContent){
     this.content = updateContent;
+  }
+
+  public void connetParentComment(Comment parentComment){
+    this.parent = parentComment;
   }
 
 

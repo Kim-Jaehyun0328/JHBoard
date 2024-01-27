@@ -6,6 +6,8 @@ import JHboard.project.domain.board.dto.BoardRsDto;
 import JHboard.project.domain.board.entity.Board;
 import JHboard.project.domain.board.entity.BoardFile;
 import JHboard.project.domain.board.repository.BoardRepository;
+import JHboard.project.domain.comment.entity.Comment;
+import JHboard.project.domain.comment.repository.CommentRepository;
 import JHboard.project.domain.member.entity.Member;
 import JHboard.project.domain.member.repository.MemberRepository;
 import JHboard.project.global.s3.S3UploadSevice;
@@ -16,12 +18,9 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +32,7 @@ public class BoardServiceImpl implements BoardService{
   private final MemberRepository memberRepository;
   private final S3UploadSevice s3UploadSevice;
   private final BoardFileService boardFileService;
+  private final CommentRepository commentRepository;
 
 
   @Override
@@ -51,15 +51,16 @@ public class BoardServiceImpl implements BoardService{
   public void create(BoardRqDto boardRqDto, Principal principal) throws IOException {
     String username = principal.getName();
     Optional<Member> memberOptional = memberRepository.findByUsername(username);
-
     if(!memberOptional.isEmpty()){
       List<BoardFile> boardFiles = s3UploadSevice.saveFiles(boardRqDto.getMultipartFileList());
       Board savedBoard = boardRepository.save(
           Board.createEntity(boardRqDto, memberOptional.get(), boardFiles));
+
+
       for (BoardFile boardFile : boardFiles) {
+        log.info("boardFile={}", boardFile.getSavedFileName());
         boardFile.connetBoardId(savedBoard);
         boardFileService.create(boardFile);
-        savedBoard.getBoardFiles().add(boardFile);
       }
     }
   }
@@ -99,7 +100,8 @@ public class BoardServiceImpl implements BoardService{
     Optional<Board> boardOptional = boardRepository.findById(boardId);
     if(!boardOptional.isEmpty()){
       boardOptional.get().updateView();
-      return BoardRsDto.toDto(boardOptional.get());
+      List<Comment> comments = commentRepository.findByParentIsNullAndBoardId(boardId);
+      return BoardRsDto.toDto(boardOptional.get(), comments);
     }
     return null;
   }
