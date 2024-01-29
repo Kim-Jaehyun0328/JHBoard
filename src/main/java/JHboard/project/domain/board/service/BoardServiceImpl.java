@@ -56,9 +56,7 @@ public class BoardServiceImpl implements BoardService{
       Board savedBoard = boardRepository.save(
           Board.createEntity(boardRqDto, memberOptional.get(), boardFiles));
 
-
       for (BoardFile boardFile : boardFiles) {
-        log.info("boardFile={}", boardFile.getSavedFileName());
         boardFile.connetBoardId(savedBoard);
         boardFileService.create(boardFile);
       }

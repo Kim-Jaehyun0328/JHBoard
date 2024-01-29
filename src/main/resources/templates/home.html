@@ -54,11 +54,20 @@
             totalPages = ${boardList.totalPages},
             startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
             tempEndPage = ${startPage + pageSize - 1},
-            endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})">
+            endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages}),
+            nextBlockStartPage = ${endPage + 1},
+            prevBlockStartPage = ${startPage - pageSize}">
 
       <!-- First 버튼 -->
       <li th:classappend="${boardList.first} ? 'disabled'" class="page-item">
         <a class="page-link" th:href="${boardList.first} ? '#' : '/?page=0'">
+          <span aria-hidden="true">&lt;&lt;&lt;</span>
+        </a>
+      </li>
+
+      <!-- Previous Block 버튼 -->
+      <li th:classappend="${boardList.first} ? 'disabled'" class="page-item">
+        <a class="page-link" th:href="${boardList.first} ? '#' : '/?page=' + ${prevBlockStartPage - 1}">
           <span aria-hidden="true">&lt;&lt;</span>
         </a>
       </li>
@@ -82,10 +91,17 @@
         </a>
       </li>
 
+      <!-- Next Block 버튼 -->
+      <li th:classappend="${boardList.last} ? 'disabled'" class="page-item">
+        <a class="page-link" th:href="${boardList.last} ? '#' : '/?page=' + ${nextBlockStartPage - 1}">
+          <span aria-hidden="true">&gt;&gt;</span>
+        </a>
+      </li>
+
       <!-- Last 버튼 -->
       <li th:classappend="${boardList.last} ? 'disabled'" class="page-item">
         <a class="page-link" th:href="${boardList.last} ? '#' : '/?page=' + ${totalPages - 1}">
-          <span aria-hidden="true">&gt;&gt;</span>
+          <span aria-hidden="true">&gt;&gt;&gt;</span>
         </a>
       </li>
     </ul>

@@ -58,6 +58,13 @@ public class BoardController {
 
     model.addAttribute("boardList", boards);
 
+    log.info("================================================");
+    log.info("totalPage={}", boards.getTotalPages());
+    log.info("number={}", boards.getNumber());
+    log.info("numberOfElements={}", boards.getNumberOfElements());
+    log.info("size={}", boards.getSize());
+    log.info("totalElements={}", boards.getTotalElements());
+    log.info("================================================");
     return "home";
   }
 
@@ -90,12 +97,6 @@ public class BoardController {
       like = likeService.findLike(boardId, memberId);
     }
 
-    Board board = boardService.findById(boardId).get();
-    log.info("=================================");
-    for (Comment c : board.getComments()) {
-      log.info("c={}", c.getContent());
-    }
-    log.info("=================================");
 
     BoardRsDto boardRsDto = boardService.detailBoard(boardId);
     model.addAttribute("board", boardRsDto);
