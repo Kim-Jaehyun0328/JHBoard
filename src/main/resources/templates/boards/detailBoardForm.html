@@ -42,8 +42,7 @@
     <!-- 로그인하지 않은 경우 -->
     <div sec:authorize-expr="!isAuthenticated()">
       <form id="commentForms" onsubmit="return false;">
-            <textarea name="content" id="commentContent" rows="4" cols="50"
-                      placeholder="로그인을 한 뒤 댓글을 작성하세요" disabled></textarea>
+        <textarea name="content" id="commentContent" rows="4" cols="50" placeholder="로그인을 한 뒤 댓글을 작성하세요" disabled></textarea>
         <button type="button" onclick="showLoginAlert()">댓글 작성</button>
       </form>
     </div>
@@ -59,34 +58,65 @@
               <p class="col-auto mt-auto" th:text="${comment.content}"></p>
               <p class="col-auto mt-auto ms-auto" th:text="${comment.modifiedAt}"></p>
             </div>
-            <div th:if="${comment.username != null and comment.username.equals(#authentication.name)}">
-              <button type="button" th:onclick="'deleteComment(' + ${board.id} + ',' + ${comment?.id} + ')'" >삭제</button>
-              <button type="button" data-bs-toggle="collapse" th:attr="data-bs-target=|#r${comment.id}" style="display:inline" class="btn btn-light">답글달기</button>
-              <div class="collapse" th:id="'r' + ${comment.id}">
-                <form sec:authorize="isAuthenticated()" th:action="@{|/comment/${board.id}/${comment.id}|}" method="post">
-                  <div class="input-group" style="width:auto">
-                    <label for="content" class="form-label mt-4" hidden>답글 작성</label>
-                    <input type="text" th:name="content" class="form-control" th:id="'reply' + ${comment.id}" name="content">
-                    <input type="hidden" th:name="parentId" th:value="${comment.id}"/>
-                    <button type="submit" class="btn btn-outline-dark">답글작성</button>
-                    <br>
-                  </div>
+            <button type="button" th:if="${comment.username != null and comment.username.equals(#authentication.name)}" data-bs-toggle="collapse" th:attr="data-bs-target=|#e${comment.id}" style="display:inline" class="btn btn-light">수정</button>
+            <form th:action="@{'/comment/' + ${board.id} + '/' + ${comment.id} + '/delete'}" th:if="${comment.username != null and comment.username.equals(#authentication.name)}"  method="post" onsubmit="return confirm('댓글을 삭제하시겠습니까?')">
+              <input type="hidden" name="_method" value="delete"/>
+              <button type="submit" class="btn btn-light">삭제</button>
+            </form>
+            <button type="button" data-bs-toggle="collapse" sec:authorize="isAuthenticated()" th:attr="data-bs-target=|#r${comment.id}" style="display:inline" class="btn btn-light">답글달기</button>
+            <div class="collapse" th:id="'e' + ${comment.id}">
+              <form sec:authorize="isAuthenticated()" th:action="@{|/comment/${board.id}/${comment.id}/edit|}" method="post">
+                <div class="input-group" style="width:auto">
+                  <label for="content" class="form-label mt-4" hidden>수정</label>
+                  <input type="text" th:name="content" class="form-control" th:id="'reply' + ${comment.id}" name="content">
+                  <input type="hidden" th:name="parentId" th:value="${comment.id}"/>
+                  <button type="submit" class="btn btn-outline-dark">수정</button>
                   <br>
-                </form>
-              </div>
-              <div style="margin-left: 30px" th:if="${not #lists.isEmpty(comment.children)}">
-                <button type="button" class="btn btn-link" data-bs-toggle="collapse" th:attr="data-bs-target=|#childrenCollapse${comment.id}" onclick="toggleCollapse(${comment.id})">
-                  <span th:text="'답글 보기 (' + ${comment.children.size} + '개)'"></span>
-                </button>
-                <div th:id="'childrenCollapse' + ${comment.id}" class="collapse">
-                  <div th:each="childComment : ${comment.children}">
-                    <div class="row border bg-light d-flex">
-                      <p class="col-auto mt-auto" th:text="${childComment.writer}"></p>
-                      <p class="col-auto mt-auto ms-auto" th:text="${childComment.modifiedAt}"></p>
-                    </div>
-                    <div class="row border-bottom d-flex">
-                      <p class="col mt-auto" th:text="${childComment.content}">내용</p>
-                    </div>
+                </div>
+                <br>
+              </form>
+            </div>
+            <div class="collapse" th:id="'r' + ${comment.id}">
+              <form sec:authorize="isAuthenticated()" th:action="@{|/comment/${board.id}/${comment.id}|}" method="post">
+                <div class="input-group" style="width:auto">
+                  <label for="content" class="form-label mt-4" hidden>답글 작성</label>
+                  <input type="text" th:name="content" class="form-control" th:id="'reply' + ${comment.id}" name="content">
+                  <input type="hidden" th:name="parentId" th:value="${comment.id}"/>
+                  <button type="submit" class="btn btn-outline-dark">답글작성</button>
+                  <br>
+                </div>
+                <br>
+              </form>
+            </div>
+            <div style="margin-left: 30px" th:if="${not #lists.isEmpty(comment.children)}">
+              <button type="button" class="btn btn-link" data-bs-toggle="collapse" th:attr="data-bs-target=|#childrenCollapse${comment.id}" onclick="toggleCollapse(${comment.id})">
+                <span th:text="'답글 보기 (' + ${comment.children.size} + '개)'"></span>
+              </button>
+              <div th:id="'childrenCollapse' + ${comment.id}" class="collapse">
+                <div th:each="childComment : ${comment.children}">
+                  <div class="row border bg-light d-flex">
+                    <p class="col-auto mt-auto" th:text="${childComment.writer}"></p>
+                    <p class="col-auto mt-auto ms-auto" th:text="${childComment.modifiedAt}"></p>
+                  </div>
+                  <div class="row border-bottom d-flex">
+                    <p class="col mt-auto" th:text="${childComment.content}">내용</p>
+                  </div>
+                  <button type="button" data-bs-toggle="collapse" th:attr="data-bs-target=|#re${comment.id}" style="display:inline" th:if="${childComment.username != null and childComment.username.equals(#authentication.name)}"  class="btn btn-light">수정</button>
+                  <form th:action="@{'/comment/' + ${board.id} + '/' + ${childComment.id} + '/delete'}" th:if="${childComment.username != null and childComment.username.equals(#authentication.name)}"  method="post" onsubmit="return confirm('댓글을 삭제하시겠습니까?')">
+                    <input type="hidden" name="_method" value="delete"/>
+                    <button type="submit" class="btn btn-light">삭제</button>
+                  </form>
+                  <div class="collapse" th:id="'re' + ${comment.id}">
+                    <form sec:authorize="isAuthenticated()" th:action="@{|/comment/${board.id}/${childComment.id}/edit|}" method="post">
+                      <div class="input-group" style="width:auto">
+                        <label for="content" class="form-label mt-4" hidden>수정</label>
+                        <input type="text" th:name="content" class="form-control" th:id="'reply' + ${childComment.id}" name="content">
+                        <!-- <input type="hidden" th:name="parentId" th:value="${childComment.id}"/> -->
+                        <button type="submit" class="btn btn-outline-dark">수정</button>
+                        <br>
+                      </div>
+                      <br>
+                    </form>
                   </div>
                 </div>
               </div>
@@ -95,49 +125,46 @@
         </div>
       </div>
     </div>
-
-
-    <!-- 게시글 수정 버튼 -->
-    <a th:href="@{'/board/' + ${board.id} + '/edit'}">Edit</a>
-
-    <!-- 게시글 삭제 버튼 -->
-    <form th:action="@{'/board/' + ${board.id} + '/delete'}" method="post">
-      <input type="hidden" name="_method" value="delete"/>
-      <button type="submit">Delete</button>
-    </form>
-
-    <!-- 좋아요 -->
-    <div sec:authorize-expr="isAuthenticated()"
-         th:unless="${#strings.equals(board.getWriter(),#authentication.name)}" class="d-block">
-      <h2>로그인을 했고, 로그인 유저 != 게시글 작성자</h2>
-      <input type="hidden" id="like_check" th:value="${like}">
-      <img th:id="likeImg" src="/assets/img/empty.png" alt="" width="30px" height="30px">
-      <span th:text="${board.likeCount}"></span>
-    </div>
-
-    <!-- 좋아요 -->
-    <div sec:authorize-expr="isAuthenticated()" th:if="${#strings.equals(board.getWriter(),#authentication.name)}"
-         class="d-block">
-      <h2>로그인을 했고, 로그인 유저 == 게시글 작성자</h2>
-      <img th:id="likeImg" src="/assets/img/empty.png" alt="" width="30px" height="30px">
-      <span th:text="${board.likeCount}"></span>
-    </div>
-
-    <div sec:authorize-expr="!isAuthenticated()">
-      <h2>비로그인 유저</h2>
-      <img id="loginCheck" src="/assets/img/empty.png" alt="" width="30px" height="30px">
-      <span th:text="${board.likeCount}"></span>
-    </div>
-
-    <div th:unless="${board}">
-      <p>게시글이 존재하지 않습니다.</p>
-    </div>
-
   </div>
-</th:block>
-<script th:inline="javascript">
 
-function toggleCollapse(commentId) {
+  <!-- 게시글 수정 버튼 -->
+  <a th:href="@{'/board/' + ${board.id} + '/edit'}">Edit</a>
+
+  <!-- 게시글 삭제 버튼 -->
+  <form th:action="@{'/board/' + ${board.id} + '/delete'}" method="post" onsubmit="return confirm('댓글을 삭제하시겠습니까?')">
+    <input type="hidden" name="_method" value="delete"/>
+    <button type="submit">Delete</button>
+  </form>
+
+  <!-- 좋아요 -->
+  <div sec:authorize-expr="isAuthenticated()" th:unless="${#strings.equals(board.getWriter(),#authentication.name)}" class="d-block">
+    <h2>로그인을 했고, 로그인 유저 != 게시글 작성자</h2>
+    <input type="hidden" id="like_check" th:value="${like}">
+    <img th:id="likeImg" src="/assets/img/empty.png" alt="" width="30px" height="30px">
+    <span th:text="${board.likeCount}"></span>
+  </div>
+
+  <!-- 좋아요 -->
+  <div sec:authorize-expr="isAuthenticated()" th:if="${#strings.equals(board.getWriter(),#authentication.name)}" class="d-block">
+    <h2>로그인을 했고, 로그인 유저 == 게시글 작성자</h2>
+    <img th:id="likeImg" src="/assets/img/empty.png" alt="" width="30px" height="30px">
+    <span th:text="${board.likeCount}"></span>
+  </div>
+
+  <div sec:authorize-expr="!isAuthenticated()">
+    <h2>비로그인 유저</h2>
+    <img id="loginCheck" src="/assets/img/empty.png" alt="" width="30px" height="30px">
+    <span th:text="${board.likeCount}"></span>
+  </div>
+
+  <div th:unless="${board}">
+    <p>게시글이 존재하지 않습니다.</p>
+  </div>
+
+</th:block>
+
+<script th:inline="javascript">
+  function toggleCollapse(commentId) {
         var collapseElement = document.getElementById('childrenCollapse' + commentId);
         var buttonText = document.querySelector('[data-bs-target="#childrenCollapse' + commentId + '"] span');
 
@@ -151,28 +178,34 @@ function toggleCollapse(commentId) {
     }
 
 function deleteComment(boardId, commentId) {
-  const conCheck = confirm("댓글을 삭제하시겠습니까?");
-  if (conCheck) {
-    fetch(`/comment/${boardId}/${commentId}/delete`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-      },
-    })
-      .then(response => response.json())
-      .then(data => {
-      })
-      .catch(error => {
-        console.error('댓글 삭제 중 오류 발생:', error);
-      });
-  }
+    console.log(boardId);
+    console.log(commentId);
+    var conCheck = confirm("댓글을 삭제하시겠습니까?");
+    if (conCheck) {
+        // 확인을 눌렀을 때의 동작
+        fetch(`/comment/${boardId}/${commentId}/delete`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8'
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            // 삭제 요청이 성공했을 때의 동작
+        })
+        .catch(error => {
+            console.error('댓글 삭제 중 오류 발생:', error);
+        });
+    }
 }
+
+
 window.onload = function () {
 const clickLikeUrl = "/assets/img/full.jpeg";
 const emptyLikeUrl = "/assets/img/empty.png";
 
 if ([[${#authentication.name}]] === "anonymousUser") {
-    document.getElementById('loginCheck').addㄴEventListener('click', function () {
+    document.getElementById('loginCheck').addEventListener('click', function () {
         alert("로그인 후 이용할 수 있습니다.");
     });
 } else {
