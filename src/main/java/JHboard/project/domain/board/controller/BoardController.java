@@ -44,6 +44,12 @@ public class BoardController {
     return "index";
   }
 
+
+  @GetMapping("/testRegister")
+  public String test2(){
+    return "temp/register";
+  }
+
 //  @GetMapping("/")
 //  public String home(Model model, @PageableDefault(sort = "createdAt", direction = Direction.DESC) Pageable pageable
 //  , @RequestParam(name = "keyword", required = false) String keyword, @RequestParam(name = "sort", defaultValue = "createdAt", required = false) String sort) {
@@ -93,8 +99,8 @@ public class BoardController {
       boards = boardService.findAll(newPageable).map(BoardRsDto::toDtoForList);
     }
 
-    // 요청한 페이지가 0보다 작거나 줄 수 있는 페이지보다 클 때
-    if (boards.getTotalPages() <= newPageable.getPageNumber()) {
+    // 요청한 페이지가 줄 수 있는 페이지보다 클 때
+    if (newPageable.getPageNumber() < 0 || boards.getTotalPages() <= newPageable.getPageNumber()) {
       log.info("hello");
       return "error/403";
     }

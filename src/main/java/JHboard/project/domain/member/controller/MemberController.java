@@ -33,7 +33,7 @@ public class MemberController {
       log.info("로그인 된 유저입니다. = {}", userDetails.getUsername());
       return "redirect:/";
     }
-    return "members/loginForm";
+    return "members/login";
   }
 
 
@@ -44,7 +44,7 @@ public class MemberController {
       memberService.login(loginRqDto, response);
     } catch (IllegalArgumentException e){
       model.addAttribute("errorMessage", e.getMessage());
-      return "members/loginForm";
+      return "members/login";
     }
 
     return "redirect:/";
@@ -61,14 +61,14 @@ public class MemberController {
   @GetMapping("/register")
   public String getRegister(Model model) {
     model.addAttribute("registerRqDto", new RegisterRqDto());
-    return "members/registerForm";
+    return "members/register";
   }
 
   @PostMapping("/register")
   public String postRegister(@Valid @ModelAttribute("registerRqDto") RegisterRqDto registerRqDto,
       BindingResult bindingResult, Model model) {
     if(bindingResult.hasErrors()){
-      return "members/registerForm";
+      return "members/register";
     }
 
     try{
@@ -76,7 +76,7 @@ public class MemberController {
       memberService.create(registerRqDto);
     } catch (IllegalStateException e){
       model.addAttribute("errorMessage", e.getMessage());
-      return "members/registerForm";
+      return "members/register";
     }
 
     return "redirect:/login";
