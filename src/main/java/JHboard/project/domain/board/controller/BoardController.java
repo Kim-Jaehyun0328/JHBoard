@@ -14,6 +14,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -43,35 +44,65 @@ public class BoardController {
     return "index";
   }
 
+//  @GetMapping("/")
+//  public String home(Model model, @PageableDefault(sort = "createdAt", direction = Direction.DESC) Pageable pageable
+//  , @RequestParam(name = "keyword", required = false) String keyword, @RequestParam(name = "sort", defaultValue = "createdAt", required = false) String sort) {
+//    Page<BoardRsDto> boards;
+//
+//    if(StringUtils.hasText(keyword)){
+//      boards = boardService.searchBoards(keyword, pageable).map(BoardRsDto::toDtoForList);
+//    } else{
+//      boards = boardService.findAll(pageable).map(BoardRsDto::toDtoForList);
+//    }
+//
+//    //요청한 페이지가 0보다 작거나 줄 수 있는 페이지보다 클 때
+//    if(boards.getTotalPages() <= pageable.getPageNumber()){
+//      log.info("hello");
+//      return "error/403";
+//    }
+//
+//
+//    model.addAttribute("boardList", boards);
+//    model.addAttribute("keyword", keyword);
+//    model.addAttribute("sort", sort);
+//
+////    log.info("================================================");
+////    log.info("totalPage={}", boards.getTotalPages());
+////    log.info("number={}", boards.getNumber());
+////    log.info("numberOfElements={}", boards.getNumberOfElements());
+////    log.info("size={}", boards.getSize());
+////    log.info("totalElements={}", boards.getTotalElements());
+////    log.info("================================================");
+//    return "home";
+//  }
+
   @GetMapping("/")
-  public String home(Model model, @PageableDefault(sort = "createdAt", direction = Direction.DESC) Pageable pageable
-  , @RequestParam(name = "keyword", required = false) String keyword, @RequestParam(name = "sort", required = false) String sort) {
+  public String home(Model model,
+      @PageableDefault(sort = "createdAt", direction = Direction.DESC) Pageable pageable,
+      @RequestParam(name = "keyword", required = false) String keyword,
+      @RequestParam(name = "sort", defaultValue = "createdAt", required = false) String sort) {
+
+    // Pageable 객체를 새로 생성하여 정렬 방향을 설정 (모든 방향은 DESC로 설정)
+    Pageable newPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Direction.DESC, sort);
+
     Page<BoardRsDto> boards;
 
-    if(StringUtils.hasText(keyword)){
-      boards = boardService.searchBoards(keyword, pageable).map(BoardRsDto::toDtoForList);
-    } else{
-      boards = boardService.findAll(pageable).map(BoardRsDto::toDtoForList);
+    if (StringUtils.hasText(keyword)) {
+      boards = boardService.searchBoards(keyword, newPageable).map(BoardRsDto::toDtoForList);
+    } else {
+      boards = boardService.findAll(newPageable).map(BoardRsDto::toDtoForList);
     }
 
-    //요청한 페이지가 0보다 작거나 줄 수 있는 페이지보다 클 때
-    if(boards.getTotalPages() <= pageable.getPageNumber()){
+    // 요청한 페이지가 0보다 작거나 줄 수 있는 페이지보다 클 때
+    if (boards.getTotalPages() <= newPageable.getPageNumber()) {
       log.info("hello");
       return "error/403";
     }
-
 
     model.addAttribute("boardList", boards);
     model.addAttribute("keyword", keyword);
     model.addAttribute("sort", sort);
 
-    log.info("================================================");
-    log.info("totalPage={}", boards.getTotalPages());
-    log.info("number={}", boards.getNumber());
-    log.info("numberOfElements={}", boards.getNumberOfElements());
-    log.info("size={}", boards.getSize());
-    log.info("totalElements={}", boards.getTotalElements());
-    log.info("================================================");
     return "home";
   }
 
