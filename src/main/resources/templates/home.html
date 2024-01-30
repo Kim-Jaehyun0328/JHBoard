@@ -1,25 +1,36 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/default_layout">
 <th:block layout:fragment="content">
-  <nav class="navbar navbar-expand-lg navbar-dark">
-    <a class="navbar-brand" href="/">JHboard</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="/login">로그인</a>
-        </li>
-      </ul>
+
+  <!-- Navbar Search-->
+  <form method="get" class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0" onsubmit="submitForm(); return false;">
+    <div class="input-group">
+      <input id="nowKeyword" class="form-control" type="text" placeholder="Search for..." aria-label="Search for..."
+             aria-describedby="btnNavbarSearch" name="keyword" th:value="${keyword}"/>
+      <button type="button" class="btn btn-primary" id="btnNavbarSearch" onclick="submitForm()">
+        <i class="fas fa-search"></i>
+      </button>
     </div>
-  </nav>
+  </form>
+
+  <form method="get" class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0" id="sortForm">
+    <div class="input-group">
+      <label for="sortSelect" class="input-group-text">정렬:</label>
+      <select class="form-select" id="sortSelect" name="sort" onchange="submitForm()">
+        <option value="createdAt" text="정렬">정렬</option>
+        <option value="createdAt" text="최신순">최신순</option>
+        <option value="views" text="조회순">조회순</option>
+        <option value="likeCount" text="좋아요순">좋아요순</option>
+        <option value="commentCnt" text="댓글순">댓글순</option>
+      </select>
+    </div>
+  </form>
+
+
 
   <!-- 글쓰기 버튼 -->
   <div class="text-center">
     <a class="btn btn-primary btn-write" th:href="@{/board/new}">글쓰기</a>
-    <button onclick="pagingReq()">페이징 목록</button>
   </div>
 
   <!-- 게시글 목록 -->
@@ -30,6 +41,7 @@
       <th>제목</th>
       <th>조회 수</th>
       <th>좋아요 수</th>
+      <th>생성일자</th>
     </tr>
     </thead>
     <tbody>
@@ -37,10 +49,11 @@
       <td th:text="${board.writer}"></td>
       <!-- 클릭 시 상세 페이지로 이동하는 링크 -->
       <td>
-        <a class="btn btn-link" th:href="@{/board/{boardId}(boardId=${board.id})}" th:text="${board.title}"></a>
+        <a class="btn btn-link" th:href="@{/board/{boardId}(boardId=${board.id})}"  th:text="${board.title} + ' [' + ${board.commentCnt} + ']'"></a>
       </td>
       <td th:text="${board.views}"></td>
       <td th:text="${board.likeCount}"></td>
+      <td th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd')}"></td>
     </tr>
     </tbody>
   </table>
@@ -60,52 +73,87 @@
 
       <!-- First 버튼 -->
       <li th:classappend="${boardList.first} ? 'disabled'" class="page-item">
-        <a class="page-link" th:href="${boardList.first} ? '#' : '/?page=0'">
+        <a class="page-link" th:href="${boardList.first} ? '#' : '/?page=0' + (${keyword} != null ? '&amp;keyword=' + ${keyword} : '') + (${sort} != null ? '&amp;sort=' + ${sort} : '')">
           <span aria-hidden="true">&lt;&lt;&lt;</span>
         </a>
       </li>
 
       <!-- Previous Block 버튼 -->
       <li th:classappend="${boardList.first} ? 'disabled'" class="page-item">
-        <a class="page-link" th:href="${boardList.first} ? '#' : '/?page=' + ${prevBlockStartPage - 1}">
+        <a class="page-link"
+           th:href="${boardList.first} ? '#' : '/?page=' + ${prevBlockStartPage - 1} + (${keyword} != null ? '&amp;keyword=' + ${keyword} : '' + (${sort} != null ? '&amp;sort=' + ${sort} : ''))">
           <span aria-hidden="true">&lt;&lt;</span>
         </a>
       </li>
 
       <!-- Previous 버튼 -->
       <li th:classappend="${boardList.first} ? 'disabled'" class="page-item">
-        <a class="page-link" th:href="${boardList.first} ? '#' : '/?page=' + ${pageNumber - 1}">
+        <a class="page-link"
+           th:href="${boardList.first} ? '#' : '/?page=' + ${pageNumber - 1} + (${keyword} != null ? '&amp;keyword=' + ${keyword} : '' + (${sort} != null ? '&amp;sort=' + ${sort} : ''))">
           <span aria-hidden="true">&lt;</span>
         </a>
       </li>
 
       <!-- 페이지 번호 버튼 -->
-      <li th:each="page: ${#numbers.sequence(startPage, endPage)}" th:classappend="${page == pageNumber + 1} ? 'active'" class="page-item">
-        <a th:text="${page}" class="page-link" th:href="'/?page=' + ${page - 1}"></a>
+      <li th:each="page: ${#numbers.sequence(startPage, endPage)}"
+          th:classappend="${page == pageNumber + 1} ? 'active'" class="page-item">
+        <a th:text="${page}" class="page-link"
+           th:href="'/?page=' + ${page - 1} + (${keyword} != null ? '&amp;keyword=' + ${keyword} : '') + (${sort} != null ? '&amp;sort=' + ${sort} : '')"></a>
       </li>
 
       <!-- Next 버튼 -->
       <li th:classappend="${boardList.last} ? 'disabled'" class="page-item">
-        <a class="page-link" th:href="${boardList.last} ? '#' : '/?page=' + ${pageNumber + 1}">
+        <a class="page-link"
+           th:href="${boardList.last} ? '#' : '/?page=' + ${pageNumber + 1} + (${keyword} != null ? '&amp;keyword=' + ${keyword} : '') + (${sort} != null ? '&amp;sort=' + ${sort} : '')">
           <span aria-hidden="true">&gt;</span>
         </a>
       </li>
 
       <!-- Next Block 버튼 -->
       <li th:classappend="${boardList.last} ? 'disabled'" class="page-item">
-        <a class="page-link" th:href="${boardList.last} ? '#' : '/?page=' + ${nextBlockStartPage - 1}">
+        <a class="page-link"
+           th:href="${boardList.last} ? '#' : '/?page=' + ${nextBlockStartPage - 1} + (${keyword} != null ? '&amp;keyword=' + ${keyword} : '') + (${sort} != null ? '&amp;sort=' + ${sort} : '')">
           <span aria-hidden="true">&gt;&gt;</span>
         </a>
       </li>
 
       <!-- Last 버튼 -->
       <li th:classappend="${boardList.last} ? 'disabled'" class="page-item">
-        <a class="page-link" th:href="${boardList.last} ? '#' : '/?page=' + ${totalPages - 1}">
+        <a class="page-link"
+           th:href="${boardList.last} ? '#' : '/?page=' + ${totalPages - 1} + (${keyword} != null ? '&amp;keyword=' + ${keyword} : '') + (${sort} != null ? '&amp;sort=' + ${sort} : '')">
           <span aria-hidden="true">&gt;&gt;&gt;</span>
         </a>
       </li>
     </ul>
   </div>
+
+
+  <script th:inline="javascript">
+  // 현재 선택된 정렬 값을 기억하기 위한 변수
+   let query = window.location.search;
+    let param = new URLSearchParams(query);
+    let currentSort = param.get('sort');
+    let currentPage = param.get('page');
+    let currentKeyword = param.get('keyword');
+
+    function submitForm() {
+        var selectedValue = document.getElementById("sortSelect").value;
+        var selectedKeyword = document.getElementById("nowKeyword").value;
+
+        var newUrl = '/?page=0' + (selectedKeyword ? '&keyword=' + encodeURIComponent(selectedKeyword) : '')
+            + (selectedValue ? '&sort=' + encodeURIComponent(selectedValue) : '');
+        console.log(newUrl);
+        window.location.href = newUrl;
+    }
+
+    // 페이지 이동 후 선택값을 복원
+    window.onload = function () {
+        console.log(currentSort);
+        if (currentSort != null) {
+            document.getElementById("sortSelect").value = currentSort;
+        }
+    };
+  </script>
 
 </th:block>
 </html>

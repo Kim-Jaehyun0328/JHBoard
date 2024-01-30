@@ -5,25 +5,24 @@ import JHboard.project.domain.board.dto.BoardRsDto;
 import JHboard.project.domain.board.entity.Board;
 import JHboard.project.domain.board.service.BoardService;
 import JHboard.project.domain.comment.dto.CommentRqDto;
-import JHboard.project.domain.comment.entity.Comment;
 import JHboard.project.domain.like.service.LikeService;
 import JHboard.project.domain.member.dto.CustomUserDetails;
 import jakarta.validation.Valid;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,29 +41,74 @@ public class BoardController {
 
   @GetMapping("/test")
   public String test(){
-    return "layout-sidenav-light";
+    return "index";
   }
 
-  @GetMapping("/")
-  public String home(Model model, @PageableDefault(sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable) {
-    Page<BoardRsDto> boards = boardService.findAll(pageable).map(BoardRsDto::toDtoForList);
 
-    //요청한 페이지가 0보다 작거나 줄 수 있는 페이지보다 클 때
-    if(boards.getTotalPages() <= pageable.getPageNumber()){
+  @GetMapping("/testRegister")
+  public String test2(){
+    return "temp/register";
+  }
+
+//  @GetMapping("/")
+//  public String home(Model model, @PageableDefault(sort = "createdAt", direction = Direction.DESC) Pageable pageable
+//  , @RequestParam(name = "keyword", required = false) String keyword, @RequestParam(name = "sort", defaultValue = "createdAt", required = false) String sort) {
+//    Page<BoardRsDto> boards;
+//
+//    if(StringUtils.hasText(keyword)){
+//      boards = boardService.searchBoards(keyword, pageable).map(BoardRsDto::toDtoForList);
+//    } else{
+//      boards = boardService.findAll(pageable).map(BoardRsDto::toDtoForList);
+//    }
+//
+//    //요청한 페이지가 0보다 작거나 줄 수 있는 페이지보다 클 때
+//    if(boards.getTotalPages() <= pageable.getPageNumber()){
+//      log.info("hello");
+//      return "error/403";
+//    }
+//
+//
+//    model.addAttribute("boardList", boards);
+//    model.addAttribute("keyword", keyword);
+//    model.addAttribute("sort", sort);
+//
+////    log.info("================================================");
+////    log.info("totalPage={}", boards.getTotalPages());
+////    log.info("number={}", boards.getNumber());
+////    log.info("numberOfElements={}", boards.getNumberOfElements());
+////    log.info("size={}", boards.getSize());
+////    log.info("totalElements={}", boards.getTotalElements());
+////    log.info("================================================");
+//    return "home";
+//  }
+
+  @GetMapping("/")
+  public String home(Model model,
+      @PageableDefault(sort = "createdAt", direction = Direction.DESC) Pageable pageable,
+      @RequestParam(name = "keyword", required = false) String keyword,
+      @RequestParam(name = "sort", defaultValue = "createdAt", required = false) String sort) {
+
+    // Pageable 객체를 새로 생성하여 정렬 방향을 설정 (모든 방향은 DESC로 설정)
+    Pageable newPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Direction.DESC, sort);
+
+    Page<BoardRsDto> boards;
+
+    if (StringUtils.hasText(keyword)) {
+      boards = boardService.searchBoards(keyword, newPageable).map(BoardRsDto::toDtoForList);
+    } else {
+      boards = boardService.findAll(newPageable).map(BoardRsDto::toDtoForList);
+    }
+
+    // 요청한 페이지가 줄 수 있는 페이지보다 클 때
+    if (newPageable.getPageNumber() < 0 || boards.getTotalPages() <= newPageable.getPageNumber()) {
       log.info("hello");
       return "error/403";
     }
 
-
     model.addAttribute("boardList", boards);
+    model.addAttribute("keyword", keyword);
+    model.addAttribute("sort", sort);
 
-    log.info("================================================");
-    log.info("totalPage={}", boards.getTotalPages());
-    log.info("number={}", boards.getNumber());
-    log.info("numberOfElements={}", boards.getNumberOfElements());
-    log.info("size={}", boards.getSize());
-    log.info("totalElements={}", boards.getTotalElements());
-    log.info("================================================");
     return "home";
   }
 

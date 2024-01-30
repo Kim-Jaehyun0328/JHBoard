@@ -15,6 +15,14 @@ public interface BoardService {
 
   Page<Board> findAll(Pageable pageable);
 
+  /**
+   * 검색 기능
+   * @param keyword
+   * @param pageable
+   * @return
+   */
+  Page<Board> searchBoards(String keyword, Pageable pageable);
+
   void create(BoardRqDto boardRqDto, Principal principal) throws IOException;
 
   void delete(Long boardId);
