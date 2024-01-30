@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" layout:decorate="layout/default_layout">
-<body>
 <th:block layout:fragment="content">
   <div th:if="${board}">
     <p><strong>Title:</strong> <span th:text="${board.title}"></span></p>
@@ -161,9 +160,7 @@
     <p>게시글이 존재하지 않습니다.</p>
   </div>
 
-</th:block>
-
-<script th:inline="javascript">
+  <script th:inline="javascript">
   function toggleCollapse(commentId) {
         var collapseElement = document.getElementById('childrenCollapse' + commentId);
         var buttonText = document.querySelector('[data-bs-target="#childrenCollapse' + commentId + '"] span');
@@ -255,5 +252,6 @@ function sendLikeRequest(boardId, imageUrl) {
 }
 };
 </script>
-</body>
+</th:block>
+
 </html>

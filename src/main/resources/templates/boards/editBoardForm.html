@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/default_layout">
-<body>
 <th:block layout:fragment="content">
   <h2>Edit Board</h2>
 
@@ -32,8 +31,7 @@
   </form>
 
   <a href="/">Back to Home</a>
-</th:block>
-<script>
+  <script>
   ClassicEditor.create(document.querySelector('#content'), {
     language: "ko",
     ckfinder: {
@@ -42,5 +40,5 @@
     }
   });
 </script>
-</body>
+</th:block>
 </html>
