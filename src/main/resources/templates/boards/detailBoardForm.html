@@ -56,7 +56,7 @@
             <div class="row border bg-light d-flex">
               <p class="col-auto mt-auto" th:text="${comment.writer}"></p>
               <p class="col-auto mt-auto" th:text="${comment.content}"></p>
-              <p class="col-auto mt-auto ms-auto" th:text="${comment.modifiedAt}"></p>
+              <p class="col-auto mt-auto ms-auto" th:text="${#temporals.format(comment.modifiedAt, 'yyyy-MM-dd')}"></p>
             </div>
             <button type="button" th:if="${comment.username != null and comment.username.equals(#authentication.name)}" data-bs-toggle="collapse" th:attr="data-bs-target=|#e${comment.id}" style="display:inline" class="btn btn-light">수정</button>
             <form th:action="@{'/comment/' + ${board.id} + '/' + ${comment.id} + '/delete'}" th:if="${comment.username != null and comment.username.equals(#authentication.name)}"  method="post" onsubmit="return confirm('댓글을 삭제하시겠습니까?')">
@@ -96,7 +96,7 @@
                 <div th:each="childComment : ${comment.children}">
                   <div class="row border bg-light d-flex">
                     <p class="col-auto mt-auto" th:text="${childComment.writer}"></p>
-                    <p class="col-auto mt-auto ms-auto" th:text="${childComment.modifiedAt}"></p>
+                    <p class="col-auto mt-auto ms-auto" th:text="${#temporals.format(childComment.modifiedAt, 'yyyy-MM-dd')}"></p>
                   </div>
                   <div class="row border-bottom d-flex">
                     <p class="col mt-auto" th:text="${childComment.content}">내용</p>

@@ -40,8 +40,8 @@ public class BoardRsDto {
     boardRsDto.title = board.getTitle();
     boardRsDto.views = board.getViews();
     boardRsDto.likeCount = board.getLikeCount();
-    boardRsDto.commentCnt = boardRsDto.getCommentCnt();
-    boardRsDto.createdAt = board.getCreateAt();
+    boardRsDto.commentCnt = board.getCommentCnt();
+    boardRsDto.createdAt = board.getCreatedAt();
     return boardRsDto;
   }
 

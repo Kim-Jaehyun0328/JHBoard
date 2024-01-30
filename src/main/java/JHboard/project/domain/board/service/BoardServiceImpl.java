@@ -45,6 +45,11 @@ public class BoardServiceImpl implements BoardService{
     return boardRepository.findAll(pageable);
   }
 
+  @Override
+  public Page<Board> searchBoards(String keyword, Pageable pageable) {
+    return boardRepository.searchBoards(keyword, pageable);
+  }
+
 
   @Override
   @Transactional
