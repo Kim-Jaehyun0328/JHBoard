@@ -5,6 +5,7 @@ import JHboard.project.domain.board.service.BoardService;
 import JHboard.project.domain.comment.entity.Comment;
 import JHboard.project.domain.comment.repository.CommentRepository;
 import JHboard.project.domain.member.entity.Member;
+import JHboard.project.domain.member.repository.MemberRepository;
 import JHboard.project.domain.member.service.MemberService;
 import com.amazonaws.services.kms.model.NotFoundException;
 import java.security.Principal;
@@ -21,7 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class CommentServiceImpl implements CommentService{
   private final CommentRepository commentRepository;
-  private final MemberService memberService;
+//  private final MemberService memberService;
+  private final MemberRepository memberRepository;
   private final BoardService boardService;
 
   @Override
@@ -58,7 +60,7 @@ public class CommentServiceImpl implements CommentService{
   @Override
   public Comment create(Long boardId, String content, Principal principal) {
     String username = principal.getName();
-    Member member = memberService.findByUsername(username)
+    Member member = memberRepository.findByUsername(username)
         .orElseThrow(() -> new NotFoundException("옳지 않은 유저입니다."));
     Board board = boardService.findById(boardId)
         .orElseThrow(() -> new NotFoundException("옳지 않은 게시판입니다."));
@@ -73,7 +75,7 @@ public class CommentServiceImpl implements CommentService{
   @Transactional
   public Comment createChildComment(Long boardId, Long commentId, String content, Principal principal) {
     String username = principal.getName();
-    Member member = memberService.findByUsername(username)
+    Member member = memberRepository.findByUsername(username)
         .orElseThrow(() -> new NotFoundException("옳지 않은 유저입니다."));
     Board board = boardService.findById(boardId)
         .orElseThrow(() -> new NotFoundException("옳지 않은 게시판입니다."));

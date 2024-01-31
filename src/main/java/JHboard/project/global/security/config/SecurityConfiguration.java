@@ -1,12 +1,14 @@
 package JHboard.project.global.security.config;
 
 
+import JHboard.project.domain.member.service.CustomOauth2UserService;
 import JHboard.project.global.security.jwt.JwtFilter;
 import JHboard.project.global.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -22,6 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration {
 
   private final JwtUtil jwtUtil;
+  private final CustomOauth2UserService customOauth2UserService;
 
   @Bean  //이걸로 바꿔야 함
   public PasswordEncoder passwordEncoder() {
@@ -33,6 +36,7 @@ public class SecurityConfiguration {
 
     http
         .authorizeHttpRequests((auth) -> auth
+            .requestMatchers("/", "/oauth2/**", "/login/**").permitAll()
             .requestMatchers("/board/{boardId}/edit", "/board/{boardId}/delete").hasRole("MEMBER")
             .requestMatchers("/board/new", "/logout").authenticated()
             .requestMatchers("/admin").hasRole("ADMIN")
@@ -70,6 +74,13 @@ public class SecurityConfiguration {
         .authenticationEntryPoint((request, response, authException) ->
             response.sendRedirect("/login"))
     );
+
+    http
+        .oauth2Login((oauth2) -> oauth2
+            .loginPage("/login")
+            .userInfoEndpoint((userInfoEndpointConfig) ->
+                userInfoEndpointConfig.userService(customOauth2UserService)));
+
     return http.build();
   }
 

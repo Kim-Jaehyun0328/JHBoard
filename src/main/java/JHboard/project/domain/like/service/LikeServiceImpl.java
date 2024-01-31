@@ -21,7 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class LikeServiceImpl implements LikeService{
   private final LikeRepository likeRepository;
   private final BoardService boardService;
-  private final MemberService memberService;
+//  private final MemberService memberService;
+  private final MemberRepository memberRepository;
 
   @Override
   public Optional<Like> findById(Long likeId) {
@@ -48,7 +49,7 @@ public class LikeServiceImpl implements LikeService{
   @Transactional
   public boolean saveLike(Long boardId, Long memberId) {
     if(!findLike(boardId, memberId)) {
-      Member member = memberService.findById(memberId).orElseThrow(() ->
+      Member member = memberRepository.findById(memberId).orElseThrow(() ->
           new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
       Board board = boardService.findById(boardId).orElseThrow(() ->
           new IllegalArgumentException("해당 게시물이 존재하지 않습니다."));
