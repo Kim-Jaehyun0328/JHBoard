@@ -2,6 +2,7 @@ package JHboard.project.domain.member.service;
 
 import JHboard.project.domain.member.dto.oauth2.CustomOAuth2User;
 import JHboard.project.domain.member.dto.oauth2.GoogleResponse;
+import JHboard.project.domain.member.dto.oauth2.KakaoResponse;
 import JHboard.project.domain.member.dto.oauth2.NaverResponse;
 import JHboard.project.domain.member.dto.oauth2.OAuth2Response;
 import JHboard.project.domain.member.entity.Member;
@@ -43,7 +44,10 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
       oAuth2Response = new NaverResponse(oAuth2User.getAttributes());
     } else if (registrationId.equals("google")) {
       oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
-    } else{
+    } else if(registrationId.equals("kakao")){
+      oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
+    }
+    else{
       return null;
     }
 
@@ -77,6 +81,11 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
     return true;
   }
 
+  /**
+   * 처음 로그인을 시도한 oauth 유저는 엔티티 객체를 생성한다.
+   * @param oAuth2Response
+   * @return
+   */
   private Member createMember(OAuth2Response oAuth2Response){
     String username = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
     String nickname = oAuth2Response.getName();
@@ -84,6 +93,11 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
     return member;
   }
 
+  /**
+   * 로그인이 성공하면 jwt 토큰을 쿠키에 생성
+   * @param response
+   * @param member
+   */
   private void createCookie(HttpServletResponse response, Member member) {
     Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER
         , jwtUtil.createToken(member.getUsername(), member.getMemberRole()));

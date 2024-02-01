@@ -100,12 +100,12 @@
                   <div class="row border-bottom d-flex">
                     <p class="col mt-auto" th:text="${childComment.content}">내용</p>
                   </div>
-                  <button type="button" data-bs-toggle="collapse" th:attr="data-bs-target=|#re${comment.id}" style="display:inline" th:if="${childComment.username != null and childComment.username.equals(#authentication.name)}"  class="btn btn-light">수정</button>
+                  <button type="button" data-bs-toggle="collapse" th:attr="data-bs-target=|#re${childComment.id}" style="display:inline" th:if="${childComment.username != null and childComment.username.equals(#authentication.name)}"  class="btn btn-light">수정</button>
                   <form th:action="@{'/comment/' + ${board.id} + '/' + ${childComment.id} + '/delete'}" th:if="${childComment.username != null and childComment.username.equals(#authentication.name)}"  method="post" onsubmit="return confirm('댓글을 삭제하시겠습니까?')">
                     <input type="hidden" name="_method" value="delete"/>
                     <button type="submit" class="btn btn-light">삭제</button>
                   </form>
-                  <div class="collapse" th:id="'re' + ${comment.id}">
+                  <div class="collapse" th:id="'re' + ${childComment.id}">
                     <form sec:authorize="isAuthenticated()" th:action="@{|/comment/${board.id}/${childComment.id}/edit|}" method="post">
                       <div class="input-group" style="width:auto">
                         <label for="content" class="form-label mt-4" hidden>수정</label>

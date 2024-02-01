@@ -28,6 +28,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @ToString(of = {"id", "nickname", "username"})
 public class Member extends BaseEntity {
 
+  private static int oAuthUserNum = 1;
 
   @Id @GeneratedValue
   @Column(name = "member_id")
@@ -76,7 +77,8 @@ public class Member extends BaseEntity {
    */
   public static Member CreateEntity(String username, String nickname) {
     Member member = new Member();
-    member.nickname = nickname;
+//    member.nickname = nickname;
+    member.nickname = "User" + String.valueOf(oAuthUserNum++);
     member.username = username;
     member.memberRole = MemberRole.ROLE_MEMBER;
 
