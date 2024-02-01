@@ -50,38 +50,6 @@ public class BoardController {
     return "temp/register";
   }
 
-//  @GetMapping("/")
-//  public String home(Model model, @PageableDefault(sort = "createdAt", direction = Direction.DESC) Pageable pageable
-//  , @RequestParam(name = "keyword", required = false) String keyword, @RequestParam(name = "sort", defaultValue = "createdAt", required = false) String sort) {
-//    Page<BoardRsDto> boards;
-//
-//    if(StringUtils.hasText(keyword)){
-//      boards = boardService.searchBoards(keyword, pageable).map(BoardRsDto::toDtoForList);
-//    } else{
-//      boards = boardService.findAll(pageable).map(BoardRsDto::toDtoForList);
-//    }
-//
-//    //요청한 페이지가 0보다 작거나 줄 수 있는 페이지보다 클 때
-//    if(boards.getTotalPages() <= pageable.getPageNumber()){
-//      log.info("hello");
-//      return "error/403";
-//    }
-//
-//
-//    model.addAttribute("boardList", boards);
-//    model.addAttribute("keyword", keyword);
-//    model.addAttribute("sort", sort);
-//
-////    log.info("================================================");
-////    log.info("totalPage={}", boards.getTotalPages());
-////    log.info("number={}", boards.getNumber());
-////    log.info("numberOfElements={}", boards.getNumberOfElements());
-////    log.info("size={}", boards.getSize());
-////    log.info("totalElements={}", boards.getTotalElements());
-////    log.info("================================================");
-//    return "home";
-//  }
-
   @GetMapping("/")
   public String home(Model model,
       @PageableDefault(sort = "createdAt", direction = Direction.DESC) Pageable pageable,

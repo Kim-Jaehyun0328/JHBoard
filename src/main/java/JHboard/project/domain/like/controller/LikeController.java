@@ -23,7 +23,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Slf4j
 public class LikeController {
   private final LikeService likeService;
-  private final MemberService memberService;
+//  private final MemberService memberService;
+  private final MemberRepository memberRepository;
 
   @PostMapping("/like/{boardId}")
   @ResponseBody
@@ -31,7 +32,7 @@ public class LikeController {
     log.info("hello");
     if(principal != null) {
       String username = principal.getName();
-      Member member = memberService.findByUsername(username).get();
+      Member member = memberRepository.findByUsername(username).get();
       boolean result = likeService.saveLike(boardId, member.getId());
       return result;
     }

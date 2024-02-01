@@ -27,6 +27,17 @@
                                             <a class="small" href="/password">Forgot Password?</a>
                                             <button type="submit" class="btn btn-light">로그인</button>
                                         </div>
+                                        <a href="/oauth2/authorization/naver">
+                                            <img src="/assets/img/naverLogin.png" alt="Naver Login" style="width: 200; height: 50;"/>
+                                        </a>
+                                        <br><br>
+                                        <a href="/oauth2/authorization/google">
+                                            <img src="/assets/img/googleLogin.png" alt="Google Login" style="width: 200; height: 50;"/>
+                                        </a>
+                                        <br><br>
+                                        <a href="/oauth2/authorization/kakao">
+                                            <img src="/assets/img/kakaoLogin.png" alt="Kakao Login" style="width: 200; height: 50;"/>
+                                        </a>
                                     </form>
                                     <!-- 에러 메시지 표시 -->
                                     <p th:if="${loginErrorMsg}" th:text="${loginErrorMsg}" style="color: red;"></p>
