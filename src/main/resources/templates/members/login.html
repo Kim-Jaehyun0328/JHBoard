@@ -1,5 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/default_layout">
+.img-container {
+width: 200px; /* 원하는 크기로 설정 */
+height: 50px; /* 원하는 크기로 설정 */
+}
+
+/* 각 이미지의 스타일 */
+.img-container img {
+width: 100%;
+height: 100%;
+object-fit: cover; /* 또는 object-fit: contain; */
+}
+
 <th:block layout:fragment="content">
     <div id="layoutAuthentication" class="bg-light">
         <div id="layoutAuthentication_content">
@@ -27,17 +39,23 @@
                                             <a class="small" href="/password">Forgot Password?</a>
                                             <button type="submit" class="btn btn-light">로그인</button>
                                         </div>
-                                        <a href="/oauth2/authorization/naver">
-                                            <img src="/assets/img/naverLogin.png" alt="Naver Login" style="width: 200; height: 50;"/>
-                                        </a>
-                                        <br><br>
-                                        <a href="/oauth2/authorization/google">
-                                            <img src="/assets/img/googleLogin.png" alt="Google Login" style="width: 200; height: 50;"/>
-                                        </a>
-                                        <br><br>
-                                        <a href="/oauth2/authorization/kakao">
-                                            <img src="/assets/img/kakaoLogin.png" alt="Kakao Login" style="width: 200; height: 50;"/>
-                                        </a>
+                                        <div class="img-container">
+                                            <a href="/oauth2/authorization/naver">
+                                                <img src="/assets/img/naverLogin.png" alt="Naver Login">
+                                            </a>
+                                        </div>
+                                        <br>
+                                        <div class="img-container">
+                                            <a href="/oauth2/authorization/google">
+                                                <img src="/assets/img/googleLogin.png" alt="Google Login">
+                                            </a>
+                                        </div>
+                                        <br>
+                                        <div class="img-container">
+                                            <a href="/oauth2/authorization/kakao">
+                                                <img src="/assets/img/kakaoLogin.png" alt="Kakao Login">
+                                            </a>
+                                        </div>
                                     </form>
                                     <!-- 에러 메시지 표시 -->
                                     <p th:if="${loginErrorMsg}" th:text="${loginErrorMsg}" style="color: red;"></p>
